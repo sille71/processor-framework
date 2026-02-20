@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.starima.pfw</groupId>
+        <artifactId>processor-framework</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>pfw-logging</artifactId>
+    <name>PFW Logging</name>
+    <description>
+        LogBook-System: LogBookServiceProcessor, ProcessorLoggerProcessor,
+        Filter, Formatter, Sink-Prozessoren, LogBookAppender.
+        Vollstaendig als Prozessorstruktur modelliert.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.starima.pfw</groupId>
+            <artifactId>pfw-runtime</artifactId>
+        </dependency>
+
+        <!-- Log4j2 Core (fuer Custom Appender) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>

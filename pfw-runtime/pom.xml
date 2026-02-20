@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.starima.pfw</groupId>
+        <artifactId>processor-framework</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>pfw-runtime</artifactId>
+    <name>PFW Runtime</name>
+    <description>
+        Laufzeit-Infrastruktur: DefaultProcessorProvider, AbstractProcessor,
+        Context-Hierarchie, ParameterProvider, Kernel, Service-Runtime.
+        Bringt die Spring Boot Integration.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.starima.pfw</groupId>
+            <artifactId>pfw-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.starima.pfw</groupId>
+            <artifactId>pfw-descriptor</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Runtime -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- JAXB (Java 17+) -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+
+        <!-- Optional: Groovy fuer Expression-basierte VariableProcessor -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>

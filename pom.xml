@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ====================================================================
+         Spring Boot Parent - Steuert Dependency-Versionen zentral
+         ==================================================================== -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <!-- ====================================================================
+         Projekt-Koordinaten
+         ==================================================================== -->
+    <groupId>de.starima.pfw</groupId>
+    <artifactId>processor-framework</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Starima Processor Framework</name>
+    <description>
+        Modellgetriebene Architektur fuer rekonfigurierbare Datenprozesse.
+        Everything is a Processor.
+    </description>
+
+    <!-- ====================================================================
+         Module - Reihenfolge = Build-Reihenfolge (Maven Reactor)
+         ==================================================================== -->
+    <modules>
+        <module>pfw-base-alt</module>   <!-- Alt — Quelle zum Rüberziehen -->
+        <module>pfw-base</module>
+        <module>pfw-descriptor</module>
+        <module>pfw-runtime</module>
+        <module>pfw-test</module>
+        <module>pfw-logging</module>
+        <module>pfw-doc</module>
+        <module>pfw-spring-boot-starter</module>
+        <module>pfw-sample</module>
+    </modules>
+
+    <!-- ====================================================================
+         Zentrale Properties
+         ==================================================================== -->
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Versionen, die nicht von Spring Boot Parent kommen -->
+        <lombok.version>1.18.32</lombok.version>
+        <commons-io.version>2.16.1</commons-io.version>
+        <groovy.version>4.0.21</groovy.version>
+        <flexmark.version>0.64.8</flexmark.version>
+        <openhtmltopdf.version>1.0.10</openhtmltopdf.version>
+    </properties>
+
+    <!-- ====================================================================
+         Dependency Management (BOM)
+         Hier werden alle Versionen zentral definiert.
+         Module deklarieren nur groupId + artifactId, keine Version.
+         ==================================================================== -->
+    <dependencyManagement>
+        <dependencies>
+	   <!-- ============================================================
+                 Altes PFW Module
+                 ============================================================ -->
+            <dependency>
+              <groupId>de.starima.pfw</groupId>
+              <artifactId>pfw-base-alt</artifactId>
+              <version>${project.version}</version>
+            </dependency>	
+            <!-- ============================================================
+                 Eigene PFW Module
+                 ============================================================ -->
+            <dependency>
+                <groupId>de.starima.pfw</groupId>
+                <artifactId>pfw-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.starima.pfw</groupId>
+                <artifactId>pfw-descriptor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.starima.pfw</groupId>
+                <artifactId>pfw-runtime</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.starima.pfw</groupId>
+                <artifactId>pfw-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.starima.pfw</groupId>
+                <artifactId>pfw-logging</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.starima.pfw</groupId>
+                <artifactId>pfw-doc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.starima.pfw</groupId>
+                <artifactId>pfw-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- ============================================================
+                 Externe Dependencies (nicht von Spring Boot verwaltet)
+                 ============================================================ -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.groovy</groupId>
+                <artifactId>groovy</artifactId>
+                <version>${groovy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-all</artifactId>
+                <version>${flexmark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openhtmltopdf</groupId>
+                <artifactId>openhtmltopdf-pdfbox</artifactId>
+                <version>${openhtmltopdf.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ====================================================================
+         Globale Dependencies (fuer ALLE Module)
+         ==================================================================== -->
+    <dependencies>
+        <!-- Lombok - ueberall verfuegbar -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- SLF4J - ueberall verfuegbar (kommt ueber Spring Boot) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Test: JUnit 5, AssertJ, Mockito - ueberall verfuegbar -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- ====================================================================
+         Build-Konfiguration
+         ==================================================================== -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

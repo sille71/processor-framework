@@ -1,0 +1,1658 @@
+[
+  {
+    "package": "de.starima.pfw.base.processor.service",
+    "class": "TestInstanceProcessorRuntime",
+    "path": "src/main/java/de/starima/pfw/base/processor/service/TestInstanceProcessorRuntime.java",
+    "lines": 42
+  },
+  {
+    "package": "de.starima.pfw.base.exception",
+    "class": "InvalidVersionNumberException",
+    "path": "src/main/java/de/starima/pfw/base/exception/InvalidVersionNumberException.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.annotation",
+    "class": "ProcessorParameter",
+    "path": "src/main/java/de/starima/pfw/base/annotation/ProcessorParameter.java",
+    "lines": 127
+  },
+  {
+    "package": "de.starima.pfw.base.annotation",
+    "class": "ValueObject",
+    "path": "src/main/java/de/starima/pfw/base/annotation/ValueObject.java",
+    "lines": 38
+  },
+  {
+    "package": "de.starima.pfw.base.annotation",
+    "class": "Processor",
+    "path": "src/main/java/de/starima/pfw/base/annotation/Processor.java",
+    "lines": 106
+  },
+  {
+    "package": "de.starima.pfw.base.processor",
+    "class": "AbstractProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/AbstractProcessor.java",
+    "lines": 459
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "ValueObjectMapValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/ValueObjectMapValueFunction.java",
+    "lines": 121
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultListValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultListValueFunction.java",
+    "lines": 167
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ProcessorTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ProcessorTypeRefProvider.java",
+    "lines": 29
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ProcessorParameterConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ProcessorParameterConfig.java",
+    "lines": 25
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ClassTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ClassTypeRefProvider.java",
+    "lines": 29
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "EnumTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/EnumTypeRefProvider.java",
+    "lines": 28
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ArrayTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ArrayTypeRefProvider.java",
+    "lines": 47
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ParameterizedTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ParameterizedTypeRefProvider.java",
+    "lines": 54
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ProcessorParameterDescriptorConfigProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ProcessorParameterDescriptorConfigProvider.java",
+    "lines": 69
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "DefaultTypeRef",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/DefaultTypeRef.java",
+    "lines": 70
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "StringTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/StringTypeRefProvider.java",
+    "lines": 27
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "DefaultTypeResolutionContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/DefaultTypeResolutionContext.java",
+    "lines": 37
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ValueObjectConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ValueObjectConfig.java",
+    "lines": 22
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ScalarValueConfigProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ScalarValueConfigProvider.java",
+    "lines": 65
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "DefaultDescriptorConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/DefaultDescriptorConfig.java",
+    "lines": 23
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ValueConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ValueConfig.java",
+    "lines": 21
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ValueFunctionConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ValueFunctionConfig.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "MapValueConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/MapValueConfig.java",
+    "lines": 13
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "BooleanTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/BooleanTypeRefProvider.java",
+    "lines": 28
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ProcessorConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ProcessorConfig.java",
+    "lines": 6
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "NumberTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/NumberTypeRefProvider.java",
+    "lines": 28
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ValueObjectTypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ValueObjectTypeRefProvider.java",
+    "lines": 27
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "CollectionValueConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/CollectionValueConfig.java",
+    "lines": 12
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "TypeRefProviderChain",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/TypeRefProviderChain.java",
+    "lines": 97
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "DefaultDescriptorConfigCreationContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/DefaultDescriptorConfigCreationContext.java",
+    "lines": 39
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ProcessorDescriptorConfigProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ProcessorDescriptorConfigProvider.java",
+    "lines": 139
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "ICollectionValueConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/ICollectionValueConfig.java",
+    "lines": 11
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "ITypeResolutionContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/ITypeResolutionContext.java",
+    "lines": 22
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IValueConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IValueConfig.java",
+    "lines": 60
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IProcessorConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IProcessorConfig.java",
+    "lines": 6
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IMapValueConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IMapValueConfig.java",
+    "lines": 20
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IDescriptorConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IDescriptorConfig.java",
+    "lines": 65
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "ITypeRef",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/ITypeRef.java",
+    "lines": 157
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IValueFunctionConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IValueFunctionConfig.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IDescriptorConfigProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IDescriptorConfigProvider.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IValueObjectConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IValueObjectConfig.java",
+    "lines": 70
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IDescriptorConfigCreationContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IDescriptorConfigCreationContext.java",
+    "lines": 48
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "ITypeRefProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/ITypeRefProvider.java",
+    "lines": 33
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config.api",
+    "class": "IProcessorParameterConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/api/IProcessorParameterConfig.java",
+    "lines": 99
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "CollectionValueConfigProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/CollectionValueConfigProvider.java",
+    "lines": 117
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.config",
+    "class": "ValueObjectDescriptorConfigProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/config/ValueObjectDescriptorConfigProvider.java",
+    "lines": 138
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "SimpleMapValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/SimpleMapValueFunction.java",
+    "lines": 115
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator",
+    "class": "DefaultInstanceCreationContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/DefaultInstanceCreationContext.java",
+    "lines": 36
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator",
+    "class": "DescriptorResolverChain",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/DescriptorResolverChain.java",
+    "lines": 84
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator",
+    "class": "FrameworkIncubator",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/FrameworkIncubator.java",
+    "lines": 31
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator",
+    "class": "DefaultConstructionManager",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/DefaultConstructionManager.java",
+    "lines": 7
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IEditSource",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IEditSource.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IConstructPolicy",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IConstructPolicy.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IDescribePolicy",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IDescribePolicy.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "ISeed",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/ISeed.java",
+    "lines": 12
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IDescribeSource",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IDescribeSource.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IConstructSource",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IConstructSource.java",
+    "lines": 12
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IBuildTaskContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IBuildTaskContext.java",
+    "lines": 6
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IDescribeTaskContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IDescribeTaskContext.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IEditPolicy",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IEditPolicy.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IEditTaskContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IEditTaskContext.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "IConstructTaskContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/IConstructTaskContext.java",
+    "lines": 4
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.domain",
+    "class": "ConstructSource",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/domain/ConstructSource.java",
+    "lines": 15
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IDescriptorResolver",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IDescriptorResolver.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IConstructSession",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IConstructSession.java",
+    "lines": 9
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IInstanceCreationContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IInstanceCreationContext.java",
+    "lines": 38
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IInstanceProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IInstanceProvider.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IConstructionManager",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IConstructionManager.java",
+    "lines": 6
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IIncubator",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IIncubator.java",
+    "lines": 29
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IEditSession",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IEditSession.java",
+    "lines": 12
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "ITypeIntrospector",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/ITypeIntrospector.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IDescribeSession",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IDescribeSession.java",
+    "lines": 12
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator.api",
+    "class": "IIncubatorSession",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/api/IIncubatorSession.java",
+    "lines": 7
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.incubator",
+    "class": "TypeIntrospectorChain",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/incubator/TypeIntrospectorChain.java",
+    "lines": 97
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "ProcessorListValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/ProcessorListValueFunction.java",
+    "lines": 223
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultArrayValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultArrayValueFunction.java",
+    "lines": 103
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "BooleanValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/BooleanValueFunction.java",
+    "lines": 84
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "StringArrayValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/StringArrayValueFunction.java",
+    "lines": 96
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "ValueObjectListValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/ValueObjectListValueFunction.java",
+    "lines": 121
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultMapValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultMapValueFunction.java",
+    "lines": 27
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultParameterGroupDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultParameterGroupDescriptor.java",
+    "lines": 179
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "StringValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/StringValueFunction.java",
+    "lines": 79
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "IntegerValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/IntegerValueFunction.java",
+    "lines": 101
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultDescriptorResolver",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultDescriptorResolver.java",
+    "lines": 107
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultMapValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultMapValueDescriptor.java",
+    "lines": 119
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DoubleValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DoubleValueFunction.java",
+    "lines": 86
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DescriptorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DescriptorProcessor.java",
+    "lines": 67
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultCollectionValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultCollectionValueDescriptor.java",
+    "lines": 126
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultValueDescriptor.java",
+    "lines": 102
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "AbstractValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/AbstractValueFunction.java",
+    "lines": 98
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "ClassValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/ClassValueFunction.java",
+    "lines": 86
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultStructureValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultStructureValueDescriptor.java",
+    "lines": 351
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "JacksonGenericListValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/JacksonGenericListValueFunction.java",
+    "lines": 123
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultReferenceValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultReferenceValueDescriptor.java",
+    "lines": 62
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultParameterDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultParameterDescriptor.java",
+    "lines": 359
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "JacksonValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/JacksonValueFunction.java",
+    "lines": 108
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "EnumValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/EnumValueFunction.java",
+    "lines": 197
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "BeanWrapperProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/BeanWrapperProcessor.java",
+    "lines": 29
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "ValueObjectValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/ValueObjectValueFunction.java",
+    "lines": 163
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "ProcessorMapValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/ProcessorMapValueFunction.java",
+    "lines": 220
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "ArtifactIdentifierValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/ArtifactIdentifierValueFunction.java",
+    "lines": 91
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IDescriptorResolver",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IDescriptorResolver.java",
+    "lines": 26
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IParameterGroupDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IParameterGroupDescriptor.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IReferenceValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IReferenceValueDescriptor.java",
+    "lines": 30
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IValueDescriptor.java",
+    "lines": 194
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IDescriptorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IDescriptorProcessor.java",
+    "lines": 142
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IValueFunction.java",
+    "lines": 122
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "ICollectionValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/ICollectionValueDescriptor.java",
+    "lines": 23
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IMapValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IMapValueDescriptor.java",
+    "lines": 21
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IProcessorDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IProcessorDescriptor.java",
+    "lines": 19
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IParameterDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IParameterDescriptor.java",
+    "lines": 141
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IStructureValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IStructureValueDescriptor.java",
+    "lines": 84
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description.api",
+    "class": "IDomainProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/api/IDomainProviderProcessor.java",
+    "lines": 9
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "AnyValueDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/AnyValueDescriptor.java",
+    "lines": 27
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "ProcessorValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/ProcessorValueFunction.java",
+    "lines": 154
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "DefaultProcessorDescriptor",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/DefaultProcessorDescriptor.java",
+    "lines": 21
+  },
+  {
+    "package": "de.starima.pfw.base.processor.description",
+    "class": "AbstractCollectionValueFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/description/AbstractCollectionValueFunction.java",
+    "lines": 229
+  },
+  {
+    "package": "de.starima.pfw.base.processor",
+    "class": "DefaultProcessorProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/DefaultProcessorProvider.java",
+    "lines": 196
+  },
+  {
+    "package": "de.starima.pfw.base.processor.doc",
+    "class": "MarkdownDocRendererProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/doc/MarkdownDocRendererProcessor.java",
+    "lines": 168
+  },
+  {
+    "package": "de.starima.pfw.base.processor.doc",
+    "class": "DocRendererProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/doc/DocRendererProcessor.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.doc.api",
+    "class": "IDocRendererProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/doc/api/IDocRendererProcessor.java",
+    "lines": 16
+  },
+  {
+    "package": "de.starima.pfw.base.processor.set",
+    "class": "SimpleTypeSet",
+    "path": "src/main/java/de/starima/pfw/base/processor/set/SimpleTypeSet.java",
+    "lines": 68
+  },
+  {
+    "package": "de.starima.pfw.base.processor.set",
+    "class": "ProcessorPrototypeIdentifierListSet",
+    "path": "src/main/java/de/starima/pfw/base/processor/set/ProcessorPrototypeIdentifierListSet.java",
+    "lines": 60
+  },
+  {
+    "package": "de.starima.pfw.base.processor.set.api",
+    "class": "ISetProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/set/api/ISetProcessor.java",
+    "lines": 26
+  },
+  {
+    "package": "de.starima.pfw.base.processor.set",
+    "class": "ProcessorPrototypeIdentifierSet",
+    "path": "src/main/java/de/starima/pfw/base/processor/set/ProcessorPrototypeIdentifierSet.java",
+    "lines": 59
+  },
+  {
+    "package": "de.starima.pfw.base.processor",
+    "class": "DefaultValueObjectProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/DefaultValueObjectProviderProcessor.java",
+    "lines": 187
+  },
+  {
+    "package": "de.starima.pfw.base.processor",
+    "class": "DefaultBeanProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/DefaultBeanProvider.java",
+    "lines": 244
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "PropertyType",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/PropertyType.java",
+    "lines": 12
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "ClassPathParameterProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/ClassPathParameterProvider.java",
+    "lines": 30
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "StringConfigurationParameterProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/StringConfigurationParameterProvider.java",
+    "lines": 43
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "DefaultParameterProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/DefaultParameterProviderProcessor.java",
+    "lines": 60
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "AbstractParameterProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/AbstractParameterProviderProcessor.java",
+    "lines": 63
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "PropertiesParameterProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/PropertiesParameterProviderProcessor.java",
+    "lines": 113
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "DefaultParameterProviderChainProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/DefaultParameterProviderChainProcessor.java",
+    "lines": 88
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter.api",
+    "class": "IBeanTypeMapProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/api/IBeanTypeMapProcessor.java",
+    "lines": 23
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter.api",
+    "class": "IParameterProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/api/IParameterProviderProcessor.java",
+    "lines": 31
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter.api",
+    "class": "IParameterChangeListener",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/api/IParameterChangeListener.java",
+    "lines": 9
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter.api",
+    "class": "IParameterFormatterProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/api/IParameterFormatterProcessor.java",
+    "lines": 9
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter.api",
+    "class": "IParameterValidatorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/api/IParameterValidatorProcessor.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "DefaultBeanTypeMapProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/DefaultBeanTypeMapProcessor.java",
+    "lines": 57
+  },
+  {
+    "package": "de.starima.pfw.base.processor.parameter",
+    "class": "FileSystemParameterProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/parameter/FileSystemParameterProviderProcessor.java",
+    "lines": 236
+  },
+  {
+    "package": "de.starima.pfw.base.processor.locale",
+    "class": "DefaultLocalDateTimeProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/locale/DefaultLocalDateTimeProcessor.java",
+    "lines": 87
+  },
+  {
+    "package": "de.starima.pfw.base.processor.locale.api",
+    "class": "ILocalDateTimeProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/locale/api/ILocalDateTimeProcessor.java",
+    "lines": 26
+  },
+  {
+    "package": "de.starima.pfw.base.processor.locale.api",
+    "class": "ILocalProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/locale/api/ILocalProviderProcessor.java",
+    "lines": 28
+  },
+  {
+    "package": "de.starima.pfw.base.processor.locale",
+    "class": "DefaultLocalProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/locale/DefaultLocalProviderProcessor.java",
+    "lines": 43
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition",
+    "class": "DefaultConditionProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/DefaultConditionProvider.java",
+    "lines": 99
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition",
+    "class": "AttributeSqlTypeConditionProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/AttributeSqlTypeConditionProcessor.java",
+    "lines": 26
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition",
+    "class": "AttributeIsNumericConditionProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/AttributeIsNumericConditionProcessor.java",
+    "lines": 24
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition",
+    "class": "AttributeTypeConditionProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/AttributeTypeConditionProcessor.java",
+    "lines": 26
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition.domain",
+    "class": "ConditionConfig",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/domain/ConditionConfig.java",
+    "lines": 212
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition.domain",
+    "class": "Condition",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/domain/Condition.java",
+    "lines": 23
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition.api",
+    "class": "IConditionConfigProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/api/IConditionConfigProviderProcessor.java",
+    "lines": 7
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition.api",
+    "class": "IConditionProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/api/IConditionProviderProcessor.java",
+    "lines": 26
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition.api",
+    "class": "IConditionProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/api/IConditionProcessor.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition.api",
+    "class": "ICondition",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/api/ICondition.java",
+    "lines": 11
+  },
+  {
+    "package": "de.starima.pfw.base.processor.condition",
+    "class": "DefaultAttributeConditionProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/condition/DefaultAttributeConditionProcessor.java",
+    "lines": 79
+  },
+  {
+    "package": "de.starima.pfw.base.processor.data",
+    "class": "DefaultSearchFilterProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/data/DefaultSearchFilterProcessor.java",
+    "lines": 101
+  },
+  {
+    "package": "de.starima.pfw.base.processor.data.domain",
+    "class": "DataPage",
+    "path": "src/main/java/de/starima/pfw/base/processor/data/domain/DataPage.java",
+    "lines": 23
+  },
+  {
+    "package": "de.starima.pfw.base.processor.data.domain",
+    "class": "Pager",
+    "path": "src/main/java/de/starima/pfw/base/processor/data/domain/Pager.java",
+    "lines": 14
+  },
+  {
+    "package": "de.starima.pfw.base.processor.data.api",
+    "class": "ISearchFilterProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/data/api/ISearchFilterProcessor.java",
+    "lines": 15
+  },
+  {
+    "package": "de.starima.pfw.base.processor.data.api",
+    "class": "IPager",
+    "path": "src/main/java/de/starima/pfw/base/processor/data/api/IPager.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.processor.data.api",
+    "class": "IDataPage",
+    "path": "src/main/java/de/starima/pfw/base/processor/data/api/IDataPage.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.data.api",
+    "class": "IDataProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/data/api/IDataProviderProcessor.java",
+    "lines": 16
+  },
+  {
+    "package": "de.starima.pfw.base.processor.service",
+    "class": "AbstractInstanceProcessorRuntime",
+    "path": "src/main/java/de/starima/pfw/base/processor/service/AbstractInstanceProcessorRuntime.java",
+    "lines": 226
+  },
+  {
+    "package": "de.starima.pfw.base.processor.service",
+    "class": "AbstractServiceProcessorRuntime",
+    "path": "src/main/java/de/starima/pfw/base/processor/service/AbstractServiceProcessorRuntime.java",
+    "lines": 225
+  },
+  {
+    "package": "de.starima.pfw.base.processor.service.api",
+    "class": "IRuntimeServiceProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/service/api/IRuntimeServiceProcessor.java",
+    "lines": 7
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "AttributeModelMapperChain",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/AttributeModelMapperChain.java",
+    "lines": 49
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "AttributeProviderChain",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/AttributeProviderChain.java",
+    "lines": 94
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "TableAttributeProviderSelector",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/TableAttributeProviderSelector.java",
+    "lines": 40
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "AttributeExpressionModelMapper",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/AttributeExpressionModelMapper.java",
+    "lines": 65
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "AttributeTransformerModelMapper",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/AttributeTransformerModelMapper.java",
+    "lines": 59
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "ReferenceAttributeProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/ReferenceAttributeProvider.java",
+    "lines": 64
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "AttributeBeanWrapperModelMapper",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/AttributeBeanWrapperModelMapper.java",
+    "lines": 48
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute.domain",
+    "class": "RcnAttributeProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/domain/RcnAttributeProcessor.java",
+    "lines": 86
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute.domain",
+    "class": "RcnAttribute",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/domain/RcnAttribute.java",
+    "lines": 91
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "DefaultAttributeProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/DefaultAttributeProvider.java",
+    "lines": 99
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute.api",
+    "class": "IAttribute",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/api/IAttribute.java",
+    "lines": 40
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute.api",
+    "class": "IAttributeProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/api/IAttributeProviderProcessor.java",
+    "lines": 15
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute.api",
+    "class": "IAttributeProviderSelectorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/api/IAttributeProviderSelectorProcessor.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute.api",
+    "class": "IAttributeModelMapperProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/api/IAttributeModelMapperProcessor.java",
+    "lines": 5
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute.api",
+    "class": "IAttributeHelperProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/api/IAttributeHelperProcessor.java",
+    "lines": 13
+  },
+  {
+    "package": "de.starima.pfw.base.processor.attribute",
+    "class": "DefaultAttributeHelperProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/attribute/DefaultAttributeHelperProcessor.java",
+    "lines": 602
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel",
+    "class": "KernelConstructionManager",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/KernelConstructionManager.java",
+    "lines": 9
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel",
+    "class": "KernelRuntimeContextProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/KernelRuntimeContextProviderProcessor.java",
+    "lines": 95
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel",
+    "class": "FullIncubatorPhaseProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/FullIncubatorPhaseProcessor.java",
+    "lines": 34
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel",
+    "class": "KernelProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/KernelProcessor.java",
+    "lines": 496
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel",
+    "class": "KernelBeanProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/KernelBeanProvider.java",
+    "lines": 63
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel.domain",
+    "class": "RunLevel",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/domain/RunLevel.java",
+    "lines": 21
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel.api",
+    "class": "IKernelBeanProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/api/IKernelBeanProvider.java",
+    "lines": 9
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel.api",
+    "class": "IRuntimeKernelProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/api/IRuntimeKernelProcessor.java",
+    "lines": 6
+  },
+  {
+    "package": "de.starima.pfw.base.processor.kernel.api",
+    "class": "IPhaseProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/kernel/api/IPhaseProcessor.java",
+    "lines": 13
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "DescriptionRequestProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/DescriptionRequestProcessor.java",
+    "lines": 44
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "JsonRequestDispatcherProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/JsonRequestDispatcherProcessor.java",
+    "lines": 57
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "DefaultMultipartHttpServletRequestDispatcherProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/DefaultMultipartHttpServletRequestDispatcherProcessor.java",
+    "lines": 74
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "DefaultUrlProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/DefaultUrlProviderProcessor.java",
+    "lines": 17
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "ClassPathImageRequestConsumer",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/ClassPathImageRequestConsumer.java",
+    "lines": 74
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "AssetRequestDispatcherProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/AssetRequestDispatcherProcessor.java",
+    "lines": 52
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.domain",
+    "class": "AssetHttpRequest",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/domain/AssetHttpRequest.java",
+    "lines": 14
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IRequestInterceptorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IRequestInterceptorProcessor.java",
+    "lines": 11
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IMultipartRequestProducerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IMultipartRequestProducerProcessor.java",
+    "lines": 13
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IResponseInterceptorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IResponseInterceptorProcessor.java",
+    "lines": 7
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IResponseDispatcherProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IResponseDispatcherProcessor.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IRequestProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IRequestProcessor.java",
+    "lines": 36
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IUrlProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IUrlProviderProcessor.java",
+    "lines": 9
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IRequestConsumerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IRequestConsumerProcessor.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IResponseHandlerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IResponseHandlerProcessor.java",
+    "lines": 7
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IRequestDispatcherProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IRequestDispatcherProcessor.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IRequestProducerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IRequestProducerProcessor.java",
+    "lines": 15
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request.api",
+    "class": "IResponseProducerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/api/IResponseProducerProcessor.java",
+    "lines": 16
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "DefaultMultipartResponseCreatorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/DefaultMultipartResponseCreatorProcessor.java",
+    "lines": 32
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "DownloadXMLResponseCreatorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/DownloadXMLResponseCreatorProcessor.java",
+    "lines": 32
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "DefaultResponseCreatorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/DefaultResponseCreatorProcessor.java",
+    "lines": 33
+  },
+  {
+    "package": "de.starima.pfw.base.processor.request",
+    "class": "RequestDispatcherProcessorChain",
+    "path": "src/main/java/de/starima/pfw/base/processor/request/RequestDispatcherProcessorChain.java",
+    "lines": 37
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context",
+    "class": "DefaultRuntimeContextProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/DefaultRuntimeContextProviderProcessor.java",
+    "lines": 123
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.domain",
+    "class": "DefaultTaskContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/domain/DefaultTaskContext.java",
+    "lines": 34
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.domain",
+    "class": "DefaultDescriptorConstructorContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/domain/DefaultDescriptorConstructorContext.java",
+    "lines": 100
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.domain",
+    "class": "DefaultContextCreationContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/domain/DefaultContextCreationContext.java",
+    "lines": 26
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.domain",
+    "class": "DefaultProcessorContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/domain/DefaultProcessorContext.java",
+    "lines": 324
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.domain",
+    "class": "DefaultTransformationContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/domain/DefaultTransformationContext.java",
+    "lines": 47
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.domain",
+    "class": "DefaultValueFunctionConstructorContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/domain/DefaultValueFunctionConstructorContext.java",
+    "lines": 16
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.domain",
+    "class": "DefaultProposalContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/domain/DefaultProposalContext.java",
+    "lines": 19
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "IProcessorContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/IProcessorContext.java",
+    "lines": 148
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "IDescriptorConstructorContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/IDescriptorConstructorContext.java",
+    "lines": 94
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "LoadStrategy",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/LoadStrategy.java",
+    "lines": 21
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "IRuntimeContextProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/IRuntimeContextProviderProcessor.java",
+    "lines": 46
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "IValueFunctionConstructorContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/IValueFunctionConstructorContext.java",
+    "lines": 9
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "IContextCreationContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/IContextCreationContext.java",
+    "lines": 16
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "ITaskContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/ITaskContext.java",
+    "lines": 60
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "IProposalContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/IProposalContext.java",
+    "lines": 16
+  },
+  {
+    "package": "de.starima.pfw.base.processor.context.api",
+    "class": "ITransformationContext",
+    "path": "src/main/java/de/starima/pfw/base/processor/context/api/ITransformationContext.java",
+    "lines": 45
+  },
+  {
+    "package": "de.starima.pfw.base.processor.api",
+    "class": "IProcessorProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/api/IProcessorProvider.java",
+    "lines": 21
+  },
+  {
+    "package": "de.starima.pfw.base.processor.api",
+    "class": "IBeanProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/api/IBeanProvider.java",
+    "lines": 24
+  },
+  {
+    "package": "de.starima.pfw.base.processor.api",
+    "class": "IProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/api/IProcessor.java",
+    "lines": 70
+  },
+  {
+    "package": "de.starima.pfw.base.processor.assets",
+    "class": "AbstractAssetProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/assets/AbstractAssetProviderProcessor.java",
+    "lines": 60
+  },
+  {
+    "package": "de.starima.pfw.base.processor.assets.domain",
+    "class": "Asset",
+    "path": "src/main/java/de/starima/pfw/base/processor/assets/domain/Asset.java",
+    "lines": 18
+  },
+  {
+    "package": "de.starima.pfw.base.processor.assets.api",
+    "class": "IAssetProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/assets/api/IAssetProviderProcessor.java",
+    "lines": 18
+  },
+  {
+    "package": "de.starima.pfw.base.processor.assets",
+    "class": "DocumentAssetProviderProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/assets/DocumentAssetProviderProcessor.java",
+    "lines": 69
+  },
+  {
+    "package": "de.starima.pfw.base.processor.artifact.api",
+    "class": "IArtifactProvider",
+    "path": "src/main/java/de/starima/pfw/base/processor/artifact/api/IArtifactProvider.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.processor.variable",
+    "class": "DefaultVariableProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/variable/DefaultVariableProcessor.java",
+    "lines": 158
+  },
+  {
+    "package": "de.starima.pfw.base.processor.variable.api",
+    "class": "IVariableProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/variable/api/IVariableProcessor.java",
+    "lines": 56
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator",
+    "class": "JacksonValueTransformerChainProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/JacksonValueTransformerChainProcessor.java",
+    "lines": 40
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator",
+    "class": "IItemTransformatorProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/IItemTransformatorProcessor.java",
+    "lines": 10
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator",
+    "class": "DefaultConfigurationModelTransformer",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/DefaultConfigurationModelTransformer.java",
+    "lines": 197
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator",
+    "class": "JacksonGenericListValueTransformerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/JacksonGenericListValueTransformerProcessor.java",
+    "lines": 53
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator",
+    "class": "JacksonValueTransformerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/JacksonValueTransformerProcessor.java",
+    "lines": 45
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator.api",
+    "class": "IConfigurationModelTransformer",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/api/IConfigurationModelTransformer.java",
+    "lines": 35
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator.api",
+    "class": "ISubjectTransformerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/api/ISubjectTransformerProcessor.java",
+    "lines": 15
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator.api",
+    "class": "ITransformerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/api/ITransformerProcessor.java",
+    "lines": 13
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator.api",
+    "class": "IBidirectionalPropertyTransformerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/api/IBidirectionalPropertyTransformerProcessor.java",
+    "lines": 12
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator.api",
+    "class": "IValueTransformerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/api/IValueTransformerProcessor.java",
+    "lines": 7
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator.api",
+    "class": "ISubjectFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/api/ISubjectFunction.java",
+    "lines": 25
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator.api",
+    "class": "IPropertyFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/api/IPropertyFunction.java",
+    "lines": 23
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator.api",
+    "class": "IFunction",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/api/IFunction.java",
+    "lines": 25
+  },
+  {
+    "package": "de.starima.pfw.base.processor.transformator",
+    "class": "ConfigTransformerProcessor",
+    "path": "src/main/java/de/starima/pfw/base/processor/transformator/ConfigTransformerProcessor.java",
+    "lines": 36
+  },
+  {
+    "package": "de.starima.pfw.base.domain",
+    "class": "ProcessorScope",
+    "path": "src/main/java/de/starima/pfw/base/domain/ProcessorScope.java",
+    "lines": 18
+  },
+  {
+    "package": "de.starima.pfw.base.domain.api",
+    "class": "IArtifact",
+    "path": "src/main/java/de/starima/pfw/base/domain/api/IArtifact.java",
+    "lines": 6
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "MapUtils",
+    "path": "src/main/java/de/starima/pfw/base/util/MapUtils.java",
+    "lines": 217
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "ArtifactIdentifier",
+    "path": "src/main/java/de/starima/pfw/base/util/ArtifactIdentifier.java",
+    "lines": 50
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "Version",
+    "path": "src/main/java/de/starima/pfw/base/util/Version.java",
+    "lines": 66
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "ProcessorUtils",
+    "path": "src/main/java/de/starima/pfw/base/util/ProcessorUtils.java",
+    "lines": 2043
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "ArtifactIdentifierComparator",
+    "path": "src/main/java/de/starima/pfw/base/util/ArtifactIdentifierComparator.java",
+    "lines": 63
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "UUIDIdentifier",
+    "path": "src/main/java/de/starima/pfw/base/util/UUIDIdentifier.java",
+    "lines": 15
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "MapDetailLevel",
+    "path": "src/main/java/de/starima/pfw/base/util/MapDetailLevel.java",
+    "lines": 21
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "IdentifierUtils",
+    "path": "src/main/java/de/starima/pfw/base/util/IdentifierUtils.java",
+    "lines": 82
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "ConfigurationModel",
+    "path": "src/main/java/de/starima/pfw/base/util/ConfigurationModel.java",
+    "lines": 22
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "DocUtils",
+    "path": "src/main/java/de/starima/pfw/base/util/DocUtils.java",
+    "lines": 166
+  },
+  {
+    "package": "de.starima.pfw.base.util.api",
+    "class": "IUUIDIdentifier",
+    "path": "src/main/java/de/starima/pfw/base/util/api/IUUIDIdentifier.java",
+    "lines": 8
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "SerializationTarget",
+    "path": "src/main/java/de/starima/pfw/base/util/SerializationTarget.java",
+    "lines": 18
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "CalculationHelper",
+    "path": "src/main/java/de/starima/pfw/base/util/CalculationHelper.java",
+    "lines": 360
+  },
+  {
+    "package": "de.starima.pfw.base.util",
+    "class": "StreamUtils",
+    "path": "src/main/java/de/starima/pfw/base/util/StreamUtils.java",
+    "lines": 66
+  },
+  {
+    "package": "de.starima.pfw.base",
+    "class": "StarimaBaseApplication",
+    "path": "src/main/java/de/starima/pfw/base/StarimaBaseApplication.java",
+    "lines": 12
+  },
+  {
+    "package": "de.starima.core.typeref",
+    "class": "TypeRef",
+    "path": "src/main/java/de/starima/core/typeref/TypeRef.java",
+    "lines": 119
+  },
+  {
+    "package": "de.starima.core.typeref",
+    "class": "TypeRefs",
+    "path": "src/main/java/de/starima/core/typeref/TypeRefs.java",
+    "lines": 52
+  },
+  {
+    "package": "de.starima.core.typeref",
+    "class": "TypeRefSerde",
+    "path": "src/main/java/de/starima/core/typeref/TypeRefSerde.java",
+    "lines": 27
+  },
+  {
+    "package": "de.starima.core.typeref",
+    "class": "TypeRefFormat",
+    "path": "src/main/java/de/starima/core/typeref/TypeRefFormat.java",
+    "lines": 9574
+  }
+]

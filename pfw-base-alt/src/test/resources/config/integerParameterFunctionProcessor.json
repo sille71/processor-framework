@@ -1,0 +1,14 @@
+{
+  "integerParameterFunctionProcessor": {
+    "domainProcessor": "simpleTypeSet:domainSet",
+    "coDomainProcessor": "simpleTypeSet:coDomainSet"
+  },
+  "domainSet": {
+    "type": "string|number",
+    "domainName": "IntegerParameterDomain"
+  },
+  "coDomainSet": {
+    "type": "integer",
+    "domainName": "IntegerParameterDomain"
+  }
+}
