@@ -110,48 +110,7 @@ public class ValueObjectInstanceProvider extends AbstractProcessor implements II
                     ? context.getRuntimeContext().getContextMergedBeanParameters(identifier)
                     : null;
 
-            if (parameters == null) parameters = new HashMap<>();
-
-            for (Map.Entry<Field, ProcessorParameter> entry :
-                    ProcessorUtils.getAllAnnotatedParameterFields(valueObject.getClass()).entrySet()) {
-
-                Field field = entry.getKey();
-                ProcessorParameter annotation = entry.getValue();
-
-                if (annotation.ignoreInitialization()) continue;
-
-                String paramName = getParameterName(field, annotation);
-                Object paramValue = parameters.get(paramName);
-
-                // Fallback auf Annotation-Default
-                if (paramValue == null && !annotation.value().isEmpty()) {
-                    paramValue = annotation.value();
-                }
-
-                if (paramValue == null && !annotation.required()) continue;
-
-                try {
-                    DefaultInstanceCreationContext childCtx =
-                            new DefaultInstanceCreationContext(context);
-                    childCtx.setFieldToResolve(field);
-                    childCtx.setTypeToResolve(field.getGenericType());
-                    childCtx.setParameterValue(paramValue);
-                    childCtx.setProcessorParameter(annotation);
-
-                    Object value = context.getRootProvider().provide(childCtx);
-
-                    if (value != null) {
-                        field.setAccessible(true);
-                        field.set(valueObject, value);
-                    } else if (annotation.required()) {
-                        log.error("Required parameter '{}' in ValueObject '{}' konnte nicht aufgelöst werden",
-                                paramName, fullBeanId);
-                    }
-                } catch (Exception e) {
-                    log.error("Fehler bei Parameter '{}' in ValueObject '{}': {}",
-                            paramName, fullBeanId, e.getMessage(), e);
-                }
-            }
+            initializeParameters(valueObject, parameters, fullBeanId, context);
 
             log.debug("ValueObject '{}' erfolgreich erzeugt", fullBeanId);
             return valueObject;
@@ -208,7 +167,7 @@ public class ValueObjectInstanceProvider extends AbstractProcessor implements II
                 // REKURSION über die Chain
                 Object rawChildValue = context.getRootProvider().extract(childCtx);
                 if (rawChildValue != null) {
-                    parameters.put(getParameterName(field, annotation), rawChildValue);
+                    parameters.put(ProcessorUtils.getParameterName(field), rawChildValue);
                 }
 
             } catch (IllegalAccessException e) {
@@ -230,11 +189,57 @@ public class ValueObjectInstanceProvider extends AbstractProcessor implements II
     // Hilfsmethoden
     // =========================================================================
 
-    private String getParameterName(Field field, ProcessorParameter annotation) {
-        if (annotation != null && !annotation.name().isEmpty()) {
-            return annotation.name();
+    /**
+     * Initialisiert alle @ProcessorParameter-Felder eines ValueObjects.
+     *
+     * <p>Wertauflösung via {@link ProcessorUtils#getParameterValue(Object, Field, Map)}:
+     * <ol>
+     *   <li>Primärer Parametername (aus {@code annotation.name()} oder Feldname)</li>
+     *   <li>Fallback: Name + {@code "Identifier"}-Suffix</li>
+     *   <li>Fallback: {@code @Processor(defaultValues)} in der Klassenhierarchie</li>
+     *   <li>Fallback: {@code annotation.value()}</li>
+     * </ol>
+     */
+    private void initializeParameters(Object valueObject, Map<String, Object> parameters,
+                                      String fullBeanId, IInstanceCreationContext context) {
+        if (parameters == null) parameters = new HashMap<>();
+
+        for (Map.Entry<Field, ProcessorParameter> entry :
+                ProcessorUtils.getAllAnnotatedParameterFields(valueObject.getClass()).entrySet()) {
+
+            Field field = entry.getKey();
+            ProcessorParameter annotation = entry.getValue();
+
+            if (annotation.ignoreInitialization()) continue;
+
+            // Vollständige Wertauflösung inkl. "Identifier"-Suffix und @Processor(defaultValues)
+            Object paramValue = ProcessorUtils.getParameterValue(valueObject, field, parameters);
+
+            if (paramValue == null && !annotation.required()) continue;
+
+            String paramName = ProcessorUtils.getParameterName(field);
+            try {
+                DefaultInstanceCreationContext childCtx =
+                        new DefaultInstanceCreationContext(context);
+                childCtx.setFieldToResolve(field);
+                childCtx.setTypeToResolve(field.getGenericType());
+                childCtx.setParameterValue(paramValue);
+                childCtx.setProcessorParameter(annotation);
+
+                Object value = context.getRootProvider().provide(childCtx);
+
+                if (value != null) {
+                    field.setAccessible(true);
+                    field.set(valueObject, value);
+                } else if (annotation.required()) {
+                    log.error("Required parameter '{}' in ValueObject '{}' konnte nicht aufgelöst werden",
+                            paramName, fullBeanId);
+                }
+            } catch (Exception e) {
+                log.error("Fehler bei Parameter '{}' in ValueObject '{}': {}",
+                        paramName, fullBeanId, e.getMessage(), e);
+            }
         }
-        return field.getName();
     }
 
     private Class<?> resolveRawType(IInstanceCreationContext context) {

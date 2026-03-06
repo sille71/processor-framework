@@ -237,7 +237,7 @@ public class ProcessorInstanceProvider extends AbstractProcessor implements IIns
                 // REKURSION über die Chain
                 Object rawChildValue = context.getRootProvider().extract(childCtx);
                 if (rawChildValue != null) {
-                    parameters.put(getParameterName(field, annotation), rawChildValue);
+                    parameters.put(ProcessorUtils.getParameterName(field), rawChildValue);
                 }
 
             } catch (IllegalAccessException e) {
@@ -289,6 +289,15 @@ public class ProcessorInstanceProvider extends AbstractProcessor implements IIns
     /**
      * Initialisiert alle @ProcessorParameter-Felder eines Prozessors.
      * Iteriert über die annotierten Felder und ruft rekursiv die InstanceProviderChain auf.
+     *
+     * <p>Wertauflösung via {@link ProcessorUtils#getParameterValue(Object, Field, Map)}:
+     * <ol>
+     *   <li>Primärer Parametername (aus {@code annotation.name()} oder Feldname)</li>
+     *   <li>Fallback: Name + {@code "Identifier"}-Suffix (Konvention für beanId-Parameter)</li>
+     *   <li>Fallback: {@code @Processor(defaultValues)} in der Klassenhierarchie
+     *       (erlaubt Subklassen, Defaults der Superklasse zu überschreiben)</li>
+     *   <li>Fallback: {@code annotation.value()} der @ProcessorParameter-Annotation</li>
+     * </ol>
      */
     private void initializeParameters(IProcessor processor, IProcessorContext processorCtx,
                                       IInstanceCreationContext parentContext) {
@@ -307,15 +316,12 @@ public class ProcessorInstanceProvider extends AbstractProcessor implements IIns
             // ignoreInitialization: contextProvider und processorDescriptor werden separat behandelt
             if (annotation.ignoreInitialization()) continue;
 
-            String paramName = getParameterName(field, annotation);
-            Object paramValue = parameters.get(paramName);
-
-            // Fallback auf Annotation-Default
-            if (paramValue == null && !annotation.value().isEmpty()) {
-                paramValue = annotation.value();
-            }
+            // Vollständige Wertauflösung inkl. "Identifier"-Suffix und @Processor(defaultValues)
+            Object paramValue = ProcessorUtils.getParameterValue(processor, field, parameters);
 
             if (paramValue == null && !annotation.required()) continue;
+
+            String paramName = ProcessorUtils.getParameterName(field);
 
             try {
                 // Kind-Context aufbauen
@@ -346,13 +352,4 @@ public class ProcessorInstanceProvider extends AbstractProcessor implements IIns
         }
     }
 
-    /**
-     * Ermittelt den Parameternamen aus Feld und Annotation.
-     */
-    private String getParameterName(Field field, ProcessorParameter annotation) {
-        if (annotation != null && !annotation.name().isEmpty()) {
-            return annotation.name();
-        }
-        return field.getName();
-    }
 }
