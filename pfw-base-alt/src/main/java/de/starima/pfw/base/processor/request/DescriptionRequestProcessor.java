@@ -23,7 +23,7 @@ public class DescriptionRequestProcessor extends AbstractProcessor implements IR
 
     @Override
     public Map<String, Map<String, Object>> processRequest() {
-        this.reconContext.getProcessor(processorIdentifier);
+        this.runtimeContext.getProcessor(processorIdentifier);
         return this.extractEffectiveProcessorParameterMap();
     }
 

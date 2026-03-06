@@ -55,6 +55,6 @@ public class DefaultParameterProviderProcessor extends AbstractParameterProvider
 
 	@Override
 	public Map<String, Map<String, Object>> getBeanParameterMap() {
-		return reconContext.getContextMergedBeanParameterMap();
+		return runtimeContext.getContextMergedBeanParameterMap();
 	}
 }

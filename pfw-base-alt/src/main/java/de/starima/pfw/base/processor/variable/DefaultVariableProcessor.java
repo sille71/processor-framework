@@ -86,8 +86,8 @@ public class DefaultVariableProcessor extends AbstractProcessor implements IVari
 	}
 
 	private Date createValuationDate(String sysVarOperator, String sysVarOperant) {
-		if (this.reconContext instanceof ReconProcessorContext) {
-			ReconResult result = ((ReconProcessorContext)this.reconContext).getReconResult();
+		if (this.runtimeContext instanceof ReconProcessorContext) {
+			ReconResult result = ((ReconProcessorContext)this.runtimeContext).getReconResult();
 			if (result != null) {
 				String classifier = result.getResultClassifier();
 				try {

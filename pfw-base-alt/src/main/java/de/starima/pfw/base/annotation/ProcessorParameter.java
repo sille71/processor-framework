@@ -124,4 +124,44 @@ public @interface ProcessorParameter {
 	public String parameterDomainProcessorPrototypeIdentifier() default "";
 
 	public String parameterDomainProcessorIdentifier() default "";
+
+	// =========================================================================
+	// NEU: Rollen-Markierungen für Framework-relevante Parameter
+	// =========================================================================
+
+	/**
+	 * Markiert diesen Parameter als den ContextProvider des Prozessors.
+	 *
+	 * <p>Der {@code IContextProviderResolver} sucht in der Prozessorklasse nach
+	 * dem Feld, das mit {@code contextProvider = true} annotiert ist, statt
+	 * nach einem fest codierten Parameternamen zu suchen.
+	 *
+	 * <p>Dadurch kann jeder Prozessor seinen ContextProvider-Parameter frei
+	 * benennen — das Framework findet ihn über die Annotation.
+	 *
+	 * <p>Beispiel:
+	 * <pre>
+	 * &#64;ProcessorParameter(contextProvider = true, ignoreInitialization = true)
+	 * private IRuntimeContextProviderProcessor contextProviderProcessor;
+	 * </pre>
+	 *
+	 * <p>In der beanParameterMap wird weiterhin der Feldname (oder {@code name()})
+	 * als Schlüssel verwendet. Der Resolver nutzt diese Markierung nur zur
+	 * Feldsuche, nicht zur Umbenennung.
+	 */
+	boolean contextProvider() default false;
+
+	/**
+	 * Markiert diesen Parameter als den ProcessorDescriptor.
+	 *
+	 * <p>Analog zu {@code contextProvider()} — der Descriptor-Incubator sucht
+	 * das Feld mit dieser Markierung, um den Descriptor zu injizieren.
+	 *
+	 * <p>Beispiel:
+	 * <pre>
+	 * &#64;ProcessorParameter(processorDescriptor = true, ignoreInitialization = true)
+	 * private IProcessorDescriptor processorDescriptor;
+	 * </pre>
+	 */
+	boolean processorDescriptor() default false;
 }

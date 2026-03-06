@@ -32,7 +32,7 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 	private String protoTypeIdentifier;
 	private String fullBeanId;
 
-	protected IProcessorContext reconContext;
+	protected IProcessorContext runtimeContext;
 
 	//private IParameterFunctionProcessor creatorParameterFunctionProcessor;
 
@@ -52,7 +52,7 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 	 * ContextProvider beschreiben?!
 	 * TODO: diese Beschreibung als Parameterbeschreibung hinterlegen?
 	 */
-	@ProcessorParameter(ignoreInitialization = true)
+	@ProcessorParameter(processorDescriptor = true, ignoreInitialization = true)
 	protected IProcessorDescriptor processorDescriptor;
 
 	/**
@@ -62,8 +62,13 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 	 * Die Annotation und damit der Parameter sind aber dennoch wichtig, damit der ProcessorDescriptor diesen auch als Parameter ausweisen kann!
 	 * Er sollte vor dem IProcessorDescriptor initialisiert werden, da der ContextProvider alle relevanten Parameter bereitstellt.
 	 */
-	@ProcessorParameter(ignoreInitialization = true)
+	@ProcessorParameter(contextProvider = true, ignoreInitialization = true)
 	protected IRuntimeContextProviderProcessor contextProviderProcessor;
+
+	@Override
+	public void setRuntimeContext(IProcessorContext ctx) {
+		this.runtimeContext = ctx;
+	}
 
 	public ProcessorScope getScope() {
 		return scope;
@@ -119,40 +124,40 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		if (context != null) {
 			//Jetzt sollte ein ContextProvider zur VerfÃ¼gung stehen
 			Assert.notNull(getUsedContextProviderProcessor(finalContext), "No context provider available!");
-			this.reconContext = getUsedContextProviderProcessor(finalContext).createInitialzerContext(this, context);
-			initProcessorDescriptor(this.reconContext);
+			this.runtimeContext = getUsedContextProviderProcessor(finalContext).createInitialzerContext(this, context);
+			initProcessorDescriptor(this.runtimeContext);
 			//an dieser Stelle sind die Parameter schon durch einen zusÃ¤tzlichen ParameterProvider angereichert.
 			//Das wÃ¤re der Fall, wenn fÃ¼r diesen Prozessor ein ContextProvider mit einem ParameterProvider konfiguriert wurde (also initContextProvider() einen neuen Kontext liefert).
 
-			initParameters(getParameters(this.reconContext));
-			this.reconContext = this.reconContext.cleanUpInitializerContext(finalContext);
+			initParameters(getParameters(this.runtimeContext));
+			this.runtimeContext = this.runtimeContext.cleanUpInitializerContext(finalContext);
 
 			this.processorOnInit();
 
 			if (this.getClass().isAnnotationPresent(Processor.class))
 				log.debug("initialized processor {} with parameters {}",
-						getIdentifier(), LogOutputHelper.getModelAsStringBuffer(getParameters(this.reconContext), null));
+						getIdentifier(), LogOutputHelper.getModelAsStringBuffer(getParameters(this.runtimeContext), null));
 		}
 	}
 
 	public void refreshParameters(Map<String,Map<String, Object>> beanParameterMap) {
-		if (this.reconContext != null) {
+		if (this.runtimeContext != null) {
 			log.debug("{}: refresh context with parameters {}", getIdentifier(), LogOutputHelper.getModelAsStringBuffer(beanParameterMap, null));
-			this.reconContext.refreshBeanParameterMap(beanParameterMap);
-			IProcessorContext finalContext =  this.reconContext != null ? this.reconContext.getFinalContext() : null;
+			this.runtimeContext.refreshBeanParameterMap(beanParameterMap);
+			IProcessorContext finalContext =  this.runtimeContext != null ? this.runtimeContext.getFinalContext() : null;
 			Assert.notNull(getUsedContextProviderProcessor(finalContext), "No context provider available!");
-			this.reconContext = getUsedContextProviderProcessor(finalContext).createInitialzerContext(this, this.reconContext);
-			initProcessorDescriptor(this.reconContext);
+			this.runtimeContext = getUsedContextProviderProcessor(finalContext).createInitialzerContext(this, this.runtimeContext);
+			initProcessorDescriptor(this.runtimeContext);
 			//an dieser Stelle sind die Parameter schon durch einen zusÃ¤tzlichen ParameterProvider angereichert.
 			//Das wÃ¤re der Fall, wenn fÃ¼r diesen Prozessor ein ContextProvider mit einem ParameterProvider konfiguriert wurde (also initContextProvider() einen neuen Kontext liefert).
-			initParameters(getParameters(this.reconContext));
-			this.reconContext = this.reconContext.cleanUpInitializerContext(finalContext);
+			initParameters(getParameters(this.runtimeContext));
+			this.runtimeContext = this.runtimeContext.cleanUpInitializerContext(finalContext);
 
 			this.processorOnRefresh();
 
 			if (this.getClass().isAnnotationPresent(Processor.class))
 				log.debug("refreshed context {} with parameters {}",
-						getIdentifier(), LogOutputHelper.getModelAsStringBuffer(getParameters(this.reconContext), null));
+						getIdentifier(), LogOutputHelper.getModelAsStringBuffer(getParameters(this.runtimeContext), null));
 		}
 	}
 
@@ -353,17 +358,17 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 	}
 
 	public IProcessorContext getRuntimeContext() {
-		return reconContext;
+		return runtimeContext;
 	}
 
 	//TODO: ist zu Ã¼berarbeiten
 	protected void resetProcessor() {
 		try {
-			if (this.reconContext.getParentContext() != null) {
-				this.reconContext.getParentContext().removeReconContext(this.reconContext);
-				init(this.reconContext.getParentContext());
+			if (this.runtimeContext.getParentContext() != null) {
+				this.runtimeContext.getParentContext().removeReconContext(this.runtimeContext);
+				init(this.runtimeContext.getParentContext());
 			} else {
-				init(this.reconContext);
+				init(this.runtimeContext);
 			}
 		} catch (Exception e) {
 			log.error("Can not reset processor {}, Msg: {}", getIdentifier(), e.toString());
@@ -425,7 +430,7 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 	 *
 	 */
 	protected IProcessor createProcessor(String processorIdentifier, String processorType, List<Map<String,Map<String, Object>>> beanParameterMaps) {
-		IProcessorContext newCtx = this.getUsedContextProviderProcessor(null).createContext(this.reconContext, beanParameterMaps);
+		IProcessorContext newCtx = this.getUsedContextProviderProcessor(null).createContext(this.runtimeContext, beanParameterMaps);
 		if (processorIdentifier != null)
 			return this.getUsedContextProviderProcessor(null).getProcessorProvider().getProcessorForBeanId(processorIdentifier, newCtx, this);
 		if (processorType == null) processorType = "requestProzessor";
@@ -434,7 +439,7 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 
 
 	public  <T extends IProcessor> T  createProcessor(Class<T> clazz, String processorIdentifier, String processorType, IProcessor parentProcessor, List<Map<String,Map<String, Object>>> beanParameterMaps) {
-		IProcessorContext newCtx = this.getUsedContextProviderProcessor(null).createContext(this.reconContext, beanParameterMaps);
+		IProcessorContext newCtx = this.getUsedContextProviderProcessor(null).createContext(this.runtimeContext, beanParameterMaps);
 		if (processorIdentifier != null) {
 			log.info("Try to create processor for identifier {}", processorIdentifier);
 			return newCtx.getContextProviderProcessor().getProcessorProvider().getProcessorForBeanId(clazz, processorIdentifier, newCtx, parentProcessor);
