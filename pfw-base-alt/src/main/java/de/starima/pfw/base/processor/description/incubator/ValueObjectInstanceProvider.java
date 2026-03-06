@@ -2,6 +2,7 @@ package de.starima.pfw.base.processor.description.incubator;
 
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.annotation.ProcessorParameter;
+import de.starima.pfw.base.domain.api.IArtifact;
 import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.api.IBeanProvider;
 import de.starima.pfw.base.processor.api.IProcessor;
@@ -102,6 +103,15 @@ public class ValueObjectInstanceProvider extends AbstractProcessor implements II
                 return null;
             }
             context.getCreationStack().add(fullBeanId);
+        }
+
+        // Falls das ValueObject IArtifact implementiert, Identifier aus der fullBeanId setzen
+        if (valueObject instanceof IArtifact<?> artifact
+                && identifier != null && !identifier.isEmpty()) {
+            //noinspection unchecked
+            ((IArtifact<String>) artifact).setIdentifier(identifier);
+            log.debug("IArtifact-Identifier '{}' gesetzt auf {}", identifier,
+                    valueObject.getClass().getSimpleName());
         }
 
         try {
