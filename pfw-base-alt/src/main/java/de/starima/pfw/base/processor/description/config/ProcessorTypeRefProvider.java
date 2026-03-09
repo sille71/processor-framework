@@ -9,7 +9,7 @@ import de.starima.pfw.base.util.ProcessorUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Processor(description = "Erkennt Typen, die IReconProcessor implementieren, und setzt das 'processor'-Flag in der ITypeRef.")
+@Processor(description = "Erkennt Typen, die IProcessor implementieren, und setzt das 'processor'-Flag in der ITypeRef.")
 public class ProcessorTypeRefProvider extends AbstractProcessor implements ITypeRefProvider {
 
     @Override

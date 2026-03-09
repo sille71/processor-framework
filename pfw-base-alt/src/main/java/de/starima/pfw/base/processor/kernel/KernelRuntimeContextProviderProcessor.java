@@ -6,6 +6,7 @@ import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.DefaultProcessorProvider;
 import de.starima.pfw.base.processor.api.IProcessorProvider;
 import de.starima.pfw.base.processor.api.IProcessor;
+import de.starima.pfw.base.processor.context.api.IContextCreationContext;
 import de.starima.pfw.base.processor.context.api.IRuntimeContextProviderProcessor;
 import de.starima.pfw.base.processor.context.api.IProcessorContext;
 import de.starima.pfw.base.processor.context.domain.DefaultProcessorContext;
@@ -49,7 +50,7 @@ public class KernelRuntimeContextProviderProcessor extends AbstractProcessor imp
     }
 
     @Override
-    public IProcessorContext createContext(IProcessorContext parentCtx) {
+    public IProcessorContext createContext(IContextCreationContext parentCtx) {
         IProcessorContext newCtx = createNewContext();
         log.info("{}: set parameters from parameter provider parameter provider {}", getIdentifier(), this.getParameterProviderProcessor().getIdentifier());
         newCtx.setBeanParameterMap(this.getParameterProviderProcessor().getBeanParameterMap());

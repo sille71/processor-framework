@@ -1,6 +1,6 @@
 package de.starima.pfw.base.processor.data;
 
-import de.dzbank.components.utils.log.LogOutputHelper;
+import de.starima.pfw.base.util.LogOutputHelper;
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.processor.AbstractProcessor;

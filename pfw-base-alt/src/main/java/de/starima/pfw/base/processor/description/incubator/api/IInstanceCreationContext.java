@@ -73,13 +73,13 @@ public interface IInstanceCreationContext extends ITaskContext {
      * Der Root-Provider (die Chain), über den rekursive Aufrufe laufen.
      */
     IInstanceProvider getRootProvider();
-    void setRootProvider(IInstanceProvider rootProvider);
+    IInstanceCreationContext setRootProvider(IInstanceProvider rootProvider);
 
     /**
      * Der Descriptor-Config Root-Provider (die Kette), der für rekursive Aufrufe verwendet wird.
      */
     IDescriptorConfigProvider getDescriptorConfigRootProvider();
-    void setDescriptorConfigRootProvider(IDescriptorConfigProvider rootProvider);
+    IInstanceCreationContext setDescriptorConfigRootProvider(IDescriptorConfigProvider rootProvider);
 
     // =========================================================================
     // NEU: Für provide() — Parameterwert und Zirkularitätserkennung
@@ -94,7 +94,7 @@ public interface IInstanceCreationContext extends ITaskContext {
      * Bei ValueObjects: ein String (fullBeanId) oder eine Map (inline-Konfiguration).
      */
     Object getParameterValue();
-    void setParameterValue(Object value);
+    IInstanceCreationContext setParameterValue(Object value);
 
     /**
      * Stack der aktuell in Erzeugung befindlichen fullBeanIds.
@@ -168,5 +168,5 @@ public interface IInstanceCreationContext extends ITaskContext {
      * rohen Wert als Return-Wert zurück.
      */
     Map<String, Map<String, Object>> getExtractionResult();
-    void setExtractionResult(Map<String, Map<String, Object>> result);
+    IInstanceCreationContext setExtractionResult(Map<String, Map<String, Object>> result);
 }

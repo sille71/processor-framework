@@ -10,7 +10,6 @@ import de.starima.pfw.base.processor.set.api.ISetProcessor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Arrays;
 
 import java.lang.reflect.Field;
 import java.util.*;

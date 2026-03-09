@@ -1,6 +1,6 @@
 package de.starima.pfw.base.processor.request;
 
-import de.dzbank.components.utils.log.LogOutputHelper;
+import de.starima.pfw.base.util.LogOutputHelper;
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.request.api.IRequestDispatcherProcessor;
@@ -34,7 +34,7 @@ public class JsonRequestDispatcherProcessor extends AbstractProcessor implements
     public Object dispatchRequest(Object request) {
         if (isResponsibleForRequest(request)) {
             Map<String, Map<String, Object>> beanParameterMap = (Map<String, Map<String, Object>>) request;
-            log.info("{}: dispatchRequest with data {}",getFullBeanId() ,LogOutputHelper.getModelAsStringBuffer(beanParameterMap, null));
+            log.info("{}: dispatchRequest with data {}",getFullBeanId() ,LogOutputHelper.toLogString(beanParameterMap));
 
             log.info("{}: 1. create request processor", getFullBeanId());
             IRequestProcessor requestProcessor = createProcessor(IRequestProcessor.class,

@@ -1,6 +1,6 @@
 package de.starima.pfw.base.processor.request;
 
-import de.dzbank.components.utils.log.LogOutputHelper;
+import de.starima.pfw.base.util.LogOutputHelper;
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.request.api.IRequestConsumerProcessor;
@@ -47,7 +47,7 @@ public class DefaultMultipartHttpServletRequestDispatcherProcessor extends Abstr
             //optional kÃ¶nnen alle MultiPartFiles als Parameter mitgegeben werden, damit stehen sie schon bei der Prozessorinitialisierung des requestProcessor zur VerfÃ¼gung, falls nÃ¶tig
             beanParameterMap.get(ProcessorUtils.getIdentifier(requestProcessorIdentifier)).putAll(req.getFileMap());
 
-            log.info("{}: call processRequest with request processor {} and beanParameterMap data {}", getFullBeanId() ,requestProcessorIdentifier, LogOutputHelper.getModelAsStringBuffer(beanParameterMap, null));
+            log.info("{}: call processRequest with request processor {} and beanParameterMap data {}", getFullBeanId() ,requestProcessorIdentifier, LogOutputHelper.toLogString(beanParameterMap));
 
             //wir versuchen zunÃ¤chst den request Prozessor aus dem requestProcessorIdentifier zu erzeugen
             IRequestConsumerProcessor requestConsumerProcessor = createProcessor(IRequestConsumerProcessor.class,

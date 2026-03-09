@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @Getter
 @Setter
-@Processor(description = "Transformiert einen String (ProzessorIdentifier) in einen Prozessor. Dabei wird aktuell nur das Interface IReconProcessor geprÃ¼ft. Der domainProcessor ist auf die aktuell geforderte Prozessorklasse bzw Interface zu spezialisieren. siehe ProcessorPrototypeIdentifierSet")
+@Processor(description = "Transformiert einen String (ProzessorIdentifier) in einen Prozessor. Dabei wird aktuell nur das Interface IProcessor geprÃ¼ft. Der domainProcessor ist auf die aktuell geforderte Prozessorklasse bzw Interface zu spezialisieren. siehe ProcessorPrototypeIdentifierSet")
 public class ProcessorValueFunction extends AbstractValueFunction<Object, IProcessor> {
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;

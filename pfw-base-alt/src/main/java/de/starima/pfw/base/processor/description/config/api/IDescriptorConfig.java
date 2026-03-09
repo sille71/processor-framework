@@ -1,5 +1,7 @@
 package de.starima.pfw.base.processor.description.config.api;
 
+import de.starima.pfw.base.domain.ProcessorScope;
+
 import java.util.Map;
 import java.util.Optional;
 

@@ -6,7 +6,6 @@ import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.annotation.ValueObject;
 import de.starima.pfw.base.domain.ProcessorScope;
 import de.starima.pfw.base.processor.assets.DocumentAssetProviderProcessor;
-import de.starima.pfw.base.migration.domain.configuration.ReconConfiguration;
 import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.processor.context.api.*;
 import de.starima.pfw.base.processor.context.domain.DefaultDescriptorConstructorContext;
@@ -30,7 +29,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -1301,7 +1300,7 @@ public class ProcessorUtils {
     }
 
     public static List<Class<?>> findSpringClassesImplementingInterface(String packageName, Class<?> interfaceClass) {
-        if (packageName == null) packageName = "de.dzbank.recon";
+        if (packageName == null) packageName = "de.starima.pfw";
         List<Class<?>> implementingClasses = new ArrayList<>();
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AssignableTypeFilter(interfaceClass));
@@ -1319,7 +1318,7 @@ public class ProcessorUtils {
     }
 
     public static List<Class<?>> findSpringClassesWithProcessorAnnotation(String packageName) {
-        if (packageName == null) packageName = "de.dzbank.recon";
+        if (packageName == null) packageName = "de.starima.pfw";
         List<Class<?>> implementingClasses = new ArrayList<>();
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AssignableTypeFilter(IProcessor.class));
@@ -1886,49 +1885,6 @@ public class ProcessorUtils {
     }
 
     //End andere Methode
-
-    public static ReconConfiguration createReconConfigurationFromString(String configurationAsString) {
-        try (StringReader sr = new StringReader(configurationAsString)) {
-            return JAXB.unmarshal(sr, ReconConfiguration.class);
-        } catch (DataBindingException | NullPointerException e) {
-            log.warn("ReconConfiguration string couldn't be read from archive.", e);
-            return null;
-        }
-    }
-
-    public static String getConfigurationAsString(ReconConfiguration reconConfiguration) {
-        try {
-            JAXBContext jc = JAXBContext
-                    .newInstance(ReconConfiguration.class);
-            Marshaller marshaller = jc.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            StringWriter writer = new StringWriter();
-            marshaller.marshal(reconConfiguration, writer);
-            return writer.toString();
-        } catch (JAXBException e) {
-            log.warn("ReconConfiguration couldn't be written as string.", e);
-            return null;
-        }
-    }
-
-    public static ReconConfiguration getConfigurationFromFile(File file) {
-        waitUntilFileIsReleased(file);
-        try (FileReader fr = new FileReader(file)) {
-            return JAXB.unmarshal(fr, ReconConfiguration.class);
-        } catch (DataBindingException | IOException | NullPointerException e) {
-            log.warn("File {} is not a valid recon configuration!\nReason: {}", file, e);
-            return null;
-        }
-    }
-
-    public static ReconConfiguration getConfigurationFromInputStream(InputStream stream) {
-        try {
-            return JAXB.unmarshal(stream, ReconConfiguration.class);
-        } catch (DataBindingException | NullPointerException e) {
-            log.warn("Input stream is not a valid recon configuration!",  e);
-            return null;
-        }
-    }
 
     /*
      * In case a file is being copied into the deploy directory, the file is created first and then written afterwards.

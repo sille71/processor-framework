@@ -1,7 +1,7 @@
 package de.starima.pfw.base.processor;
 
-import de.dzbank.components.utils.log.LogOutputHelper;
 import de.starima.pfw.base.annotation.Processor;
+import de.starima.pfw.base.domain.ProcessorScope;
 import de.starima.pfw.base.processor.api.IBeanProvider;
 import de.starima.pfw.base.processor.context.api.IProcessorContext;
 import de.starima.pfw.base.processor.context.api.ITaskContext;
@@ -15,13 +15,10 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
 
 @Slf4j
 @Getter
@@ -172,7 +169,7 @@ public class DefaultBeanProvider extends AbstractProcessor implements IBeanProvi
             String prototypeId = ProcessorUtils.getPrototypeId(beanid);
             ProcessorScope scope = ProcessorUtils.getProcessorScope(beanid);
             /**
-            IReconProcessor processor = ProcessorUtils.getProcessorFromScope(beanid, ctx);
+            IProcessor processor = ProcessorUtils.getProcessorFromScope(beanid, ctx);
 
             if (processor != null) {
                 log.info("Found processor {} in scope {} and context {}", processor.getFullBeanId(), processor.getScope().name(), ctx.getName());

@@ -3,7 +3,7 @@ package de.starima.pfw.base.util;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.dzbank.components.utils.log.LogOutputHelper;
+import de.starima.pfw.base.util.LogOutputHelper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -172,7 +172,7 @@ public class MapUtils {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(beanParameterMap);
         } catch (Exception e) {
-            log.warn("getJsonRepresentation failed for map {}", LogOutputHelper.getModelAsStringBuffer(beanParameterMap, null), e);
+            log.warn("getJsonRepresentation failed for map {}", LogOutputHelper.toLogString(beanParameterMap), e);
         }
         return null;
     }

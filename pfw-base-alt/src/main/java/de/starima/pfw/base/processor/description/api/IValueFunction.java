@@ -10,7 +10,7 @@ import java.util.List;
  * ReprÃ¤sentiert die Kernlogik fÃ¼r die Transformation und Validierung eines Wertes.
  * Sie ist die "Engine" hinter einem IValueDescriptor.
  * @param <I> Input-Typ (z.B. String aus der Konfiguration)
- * @param <O> Output-Typ (z.B. ein IReconProcessor-Objekt)
+ * @param <O> Output-Typ (z.B. ein IProcessor-Objekt)
  */
 public interface IValueFunction<S extends ITransformationContext, I, O> extends ISubjectFunction<S, I, O>, IDescriptorProcessor {
     // Wir Ã¼bernehmen die Methoden aus der alten IParameterFunctionProcessor
@@ -40,7 +40,7 @@ public interface IValueFunction<S extends ITransformationContext, I, O> extends 
     void setTypeIdentifier(String genericTypeIdentifier);
 
     /**
-     * PrÃ¼ft, ob der Wert ein IReconProcessor ist, indem es die assoziierte ValueFunction fragt.
+     * PrÃ¼ft, ob der Wert ein IProcessor ist, indem es die assoziierte ValueFunction fragt.
      */
     default boolean isProcessor() {
         return false;

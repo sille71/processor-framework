@@ -8,7 +8,7 @@ public interface ICollectionValueDescriptor extends IValueDescriptor {
     /**
      * Liefert den "Template"-Deskriptor, der fÃ¼r jedes Element in der Liste gilt.
      * Wenn die Liste z.B. eine {@code List<String>} ist, wÃ¼rde diese Methode einen
-     * {@code IScalarValueDescriptor} zurÃ¼ckgeben. Wenn es eine {@code List<IReconProcessor>} ist,
+     * {@code IScalarValueDescriptor} zurÃ¼ckgeben. Wenn es eine {@code List<IProcessor>} ist,
      * wÃ¼rde sie einen {@code IStructureValueDescriptor} zurÃ¼ckgeben.
      *
      * @return Der IValueDescriptor, der den Typ der Listenelemente beschreibt.

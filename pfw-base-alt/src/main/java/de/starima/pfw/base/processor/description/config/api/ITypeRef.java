@@ -36,7 +36,7 @@ public interface ITypeRef {
     String getTypeSignature();
 
     /**
-     * Gibt an, ob dieser Typ als IReconProcessor betrachtet wird.
+     * Gibt an, ob dieser Typ als IProcessor betrachtet wird.
      * Diese Information wird vom ShapeResolver wÃ¤hrend der Analyse gesetzt.
      */
     boolean isProcessor();

@@ -59,7 +59,7 @@ public interface IValueDescriptor extends IDescriptorProcessor {
     }
 
     /**
-     * PrÃ¼ft, ob der Wert ein IReconProcessor ist, indem es die assoziierte ValueFunction fragt.
+     * PrÃ¼ft, ob der Wert ein IProcessor ist, indem es die assoziierte ValueFunction fragt.
      */
     default boolean isProcessor() {
         return getValueFunction() != null && getValueFunction().isProcessor();

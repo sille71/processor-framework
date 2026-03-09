@@ -33,7 +33,7 @@ public class ValueObjectListValueFunction extends AbstractValueFunction<Object, 
         return false;
         /*
         if (List.class.isAssignableFrom(field.getType())) {
-            return ProcessorUtils.getGenericType(field).isAnnotationPresent(de.dzbank.recon.ms.base.annotation.ValueObject.class);
+            return ProcessorUtils.getGenericType(field).isAnnotationPresent(de.starima.pfw.base.annotation.ValueObject.class);
         }
         return false;
 

@@ -1,37 +1,22 @@
 package de.starima.pfw.base.processor;
 
-import de.dzbank.components.utils.log.LogOutputHelper;
-import de.dzbank.recon.components.base.processors.api.IReconProcessorLifecycleListener;
+import de.starima.pfw.base.domain.ProcessorScope;
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.processor.context.api.IProcessorContext;
 import de.starima.pfw.base.processor.api.IProcessorProvider;
 import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.util.ProcessorUtils;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
 @Processor
 public class DefaultProcessorProvider extends DefaultBeanProvider implements IProcessorProvider {
-	@Builder.Default private List<IReconProcessorLifecycleListener> reconProcessorLifecycleListeners = new ArrayList<>();
-
-	public void addReconProcessorLifecycleListener(IReconProcessorLifecycleListener listener) {
-		reconProcessorLifecycleListeners.add(listener);
-	}
-
-	public void removeReconProcessorLifecycleListener(IReconProcessorLifecycleListener listener) {
-		reconProcessorLifecycleListeners.remove(listener);
-	}
 
 	@Override
 	public <T extends IProcessor> T getProcessorForType(Class<T> clazz, String processorType, IProcessorContext ctx, IProcessor parentProcessor) {
@@ -186,9 +171,9 @@ public class DefaultProcessorProvider extends DefaultBeanProvider implements IPr
 	}
 
 	// // informiert die Listener
-	// private void reconProcessorCreated(IReconProcessor processor) {
+	// private void reconProcessorCreated(IProcessor processor) {
 	// 	if (reconProcessorLifecycleListeners != null) {
-	// 		for (IReconProcessorLifecycleListener listener: reconProcessorLifecycleListeners) {
+	// 		for (IProcessorLifecycleListener listener: reconProcessorLifecycleListeners) {
 	// 			listener.processorCreated(processor);
 	// 		}
 	// 	}

@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 @Getter
 @Setter
-@Processor(description = "Eine bessere alternative bietet aber die allgemeinere ListValueFunction! Transformiert eine Liste von ProzessorIdentifiern in eine Liste von Prozessoren. Dabei wird aktuell nur das Interface IReconProcessor geprÃ¼ft. Der domainProcessor ist auf die aktuell geforderte Prozessorklasse bzw Interface zu spezialisieren. siehe ProcessorPrototypeIdentifierSet")
+@Processor(description = "Eine bessere alternative bietet aber die allgemeinere ListValueFunction! Transformiert eine Liste von ProzessorIdentifiern in eine Liste von Prozessoren. Dabei wird aktuell nur das Interface IProcessor geprÃ¼ft. Der domainProcessor ist auf die aktuell geforderte Prozessorklasse bzw Interface zu spezialisieren. siehe ProcessorPrototypeIdentifierSet")
 public class ProcessorListValueFunction extends AbstractValueFunction<Object, List<IProcessor>> {
     public static boolean isResponsibleFor(Field field) {
         // wir deaktivieren diese Funktion
@@ -34,12 +34,12 @@ public class ProcessorListValueFunction extends AbstractValueFunction<Object, Li
                     Class<?> processorClass = null;
                     //der Listentyp kann selbst wieder parametrisiert sein, in diesem Fall fragen wir nach getRawType!
                     if (fieldArgTypes[0] instanceof ParameterizedType)
-                        processorClass = IReconProcessor.class.getClassLoader()
+                        processorClass = IProcessor.class.getClassLoader()
                                 .loadClass(((ParameterizedType)fieldArgTypes[0]).getRawType().getTypeName());
                     else
-                        processorClass = IReconProcessor.class.getClassLoader().loadClass(fieldArgTypes[0].getTypeName());
+                        processorClass = IProcessor.class.getClassLoader().loadClass(fieldArgTypes[0].getTypeName());
 
-                    return IReconProcessor.class.isAssignableFrom(processorClass);
+                    return IProcessor.class.isAssignableFrom(processorClass);
                 } catch (ClassNotFoundException cce) {
                     log.debug("Could not find class {} of field {}", fieldArgTypes[0], field.getName(), cce);
                 }

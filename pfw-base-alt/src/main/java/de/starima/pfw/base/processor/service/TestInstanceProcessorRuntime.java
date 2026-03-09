@@ -30,12 +30,12 @@ public class TestInstanceProcessorRuntime extends AbstractInstanceProcessorRunti
     @ProcessorParameter
     private String testParameter;
 
-    @Override
+
     public IParameterProviderProcessor getParameterProviderProcessor() {
         return this.parameterProviderProcessor;
     }
 
-    @Override
+
     public IProcessorProvider getProcessorProvider() {
         return this.processorProvider;
     }

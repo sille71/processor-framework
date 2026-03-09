@@ -1,18 +1,14 @@
 package de.starima.pfw.base.processor.service;
 
-import de.dzbank.components.utils.log.LogOutputHelper;
+import de.starima.pfw.base.util.LogOutputHelper;
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.annotation.ProcessorParameter;
-import de.starima.pfw.base.processor.context.api.IProcessorContext;
-import de.starima.pfw.base.processor.context.domain.DefaultProcessorContext;
 import de.starima.pfw.base.processor.AbstractProcessor;
-import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.processor.parameter.api.IBeanTypeMapProcessor;
 import de.starima.pfw.base.processor.request.api.IRequestDispatcherProcessor;
 import de.starima.pfw.base.processor.request.api.IRequestProcessor;
 import de.starima.pfw.base.processor.request.api.IResponseDispatcherProcessor;
 import de.starima.pfw.base.processor.request.domain.AssetHttpRequest;
-import de.starima.pfw.base.processor.service.api.IRuntimeServiceProcessor;
 import de.starima.pfw.base.util.ProcessorUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import de.starima.pfw.base.domain.ProcessorScope;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
+
+//TODO: benötigen wir die Service Klasse noch? Oder nennen wir sie um? Früher war es der InstanceProcessor, das ändert sich aber mit dem Incubator
 
 @Slf4j
 @Getter
@@ -39,7 +38,7 @@ import java.util.*;
 @Processor
 @Service
 @RestController
-public abstract class AbstractInstanceProcessorRuntime extends AbstractProcessor implements IRuntimeServiceProcessor {
+public abstract class AbstractInstanceProcessorRuntime extends AbstractProcessor  {
     @ProcessorParameter(value = "defaultBeanTypeMapProcessor", description = "der BeanTypMap Prozessor, der benutzt wird, um aus der beanParameterMap die beanIdTypeMap zu extrahieren und dem hier erzeugten Context zu setzen.")
     private IBeanTypeMapProcessor beanTypeMapProcessor;
     @ProcessorParameter(value = "requestDispatcherProcessorChain", description = "Der RequestDispatcher steuert, ob und wie die Instanz Requests verarbeiten kann. Hier kÃ¶nnen auch Sicherheitsaspekte, Validierung, Logging etc. hinterlegt werden.")
@@ -54,88 +53,11 @@ public abstract class AbstractInstanceProcessorRuntime extends AbstractProcessor
         try {
             log.info("Start bootstrap ...");
             setScope(ProcessorScope.instance);
+            //TODO: wird vom Incubator gemacht
             this.init(null);
         } catch (Exception e) {
             log.error("Can not initialize instance processor!", e);
         }
-    }
-
-
-
-    @Override
-    protected IProcessorContext initContextProvider(IProcessorContext ctx) {
-        return this.createContext(ctx);
-    }
-
-    //Beginn ContextProvider Implementierung
-    @Override
-    public IProcessorContext createContext(IProcessorContext parentCtx) {
-        IProcessorContext newCtx = createNewContext(parentCtx);
-
-        if (this.getParameterProviderProcessor() != null) {
-            log.info("{}: get parameters from parameter provider {}", getIdentifier(), this.getParameterProviderProcessor().getIdentifier());
-            newCtx.setBeanParameterMap(this.getParameterProviderProcessor().getBeanParameterMap());
-        }
-
-        if (this.getBeanTypeMapProcessor() != null) {
-            log.info("{}: get beanIdTypeMap from beanTypeMap processor {}", getIdentifier(), this.getBeanTypeMapProcessor().getIdentifier());
-            newCtx.setBeanIdTypeMap(this.getBeanTypeMapProcessor().getBeanIdTypeMap());
-        }
-        return newCtx;
-    }
-
-
-
-    protected IProcessorContext createNewContext(IProcessorContext parentCtx) {
-        IProcessorContext newCtx = new DefaultProcessorContext();
-        newCtx.setName(getIdentifier() + UUID.randomUUID());
-        if (parentCtx != null) {
-            log.info("create new child context {} in parent context {}", newCtx.getName(), parentCtx.getName());
-            parentCtx.addReconContext(newCtx);
-        } else {
-            log.info("create new root context {}", newCtx.getName());
-        }
-        newCtx.setContextProviderProcessor(this);
-        return newCtx;
-    }
-
-    @Override
-    public IProcessorContext createContext(IProcessorContext parentCtx, List<Map<String, Map<String, Object>>> parameterMaps) {
-        if (parameterMaps == null || parameterMaps.isEmpty()) {
-            return parentCtx != null ? parentCtx : this.createContext(null);
-        }
-        IProcessorContext newCtx = parentCtx;
-        for (Map<String, Map<String, Object>> pm : parameterMaps) {
-            newCtx = createContext(newCtx, pm);
-        }
-
-        return newCtx;
-    }
-
-    @Override
-    public IProcessorContext createContext(IProcessorContext parentCtx, Map<String, Map<String, Object>> parameterMap) {
-        if (parameterMap == null || parameterMap.isEmpty()) {
-            return parentCtx != null ? parentCtx : this.createContext(null);
-        }
-
-        IProcessorContext newCtx = createNewContext(parentCtx);
-        //wir benutzen hier nicht den ParameterProvider, sondern die Ã¼bergebenen Parameter, um den neuen Kontext mit der ParameterMap
-        // auszustatten
-        newCtx.setBeanParameterMap(parameterMap);
-        //falls ein BeanTypeMap Processor vorhanden ist, benutzen wir dessen identifier, um einen neuen aus der parameterMap zu erzeugen, der die BeanIdType Map des neuen Prozessors setzt
-        //Das benÃ¶tigen wir beispielsweise beim Deployment von Recon Konfigurationen, dort steckt der Deployment Prozessor in der Konfig
-        if (this.getBeanTypeMapProcessor() != null) {
-            log.info("{}: get beanIdTypeMap from parameterMap with beanTypeMap processor {}", getIdentifier(), this.getBeanTypeMapProcessor().getIdentifier());
-            newCtx.setBeanIdTypeMap(this.getBeanTypeMapProcessor().getBeanIdTypeMapFromParameterMap(parameterMap));
-        }
-        return newCtx;
-    }
-
-    public IProcessorContext createInitialzerContext(IProcessor processor, IProcessorContext parentCtx) {
-        IProcessorContext iCtx = createNewContext(parentCtx);
-        iCtx.setInitializedProcessor(processor);
-        iCtx.setContextProviderProcessor(this);
-        return iCtx;
     }
 
     //TODO: die origins sind zu spezifizieren (am besten konfigurativ durch einen Prozessor - dieser bekommt einen httpRequest und liefert den passenden Header)
@@ -143,7 +65,7 @@ public abstract class AbstractInstanceProcessorRuntime extends AbstractProcessor
     @CrossOrigin(maxAge = 60)
     @PostMapping(path = "/processBeanParameterMapRequest", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Map<String,Map<String, Object>>> processBeanParameterMapRequest(@RequestBody Map<String,Map<String, Object>> beanParameterMap) {
-        log.info("call processBeanParameterMapRequest with data {}", LogOutputHelper.getModelAsStringBuffer(beanParameterMap, null));
+        log.info("call processBeanParameterMapRequest with data {}", LogOutputHelper.toLogString(beanParameterMap));
         IRequestProcessor requestProcessor = createProcessor(IRequestProcessor.class,
                 null, "requestProcessor", Collections.singletonList(beanParameterMap));
         //TODO: soll der requestProcessor in den Kontext gehangen werden (zumindest fÃ¼r die Zeit, die er gebraucht wird (also innerhalb dieser Methode)?
@@ -160,7 +82,7 @@ public abstract class AbstractInstanceProcessorRuntime extends AbstractProcessor
     @CrossOrigin(maxAge = 60)
     @PostMapping(path = "/processMultipartRequest", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Map<String,Map<String, Object>>> processMultipartRequest(@RequestPart String requestProcessorIdentifier ,@RequestPart Map<String,Map<String, Object>> beanParameterMap, @RequestPart MultipartFile file) {
-        log.info("call processMultipartRequest with request processor {} and beanParameterMap data {}",requestProcessorIdentifier, LogOutputHelper.getModelAsStringBuffer(beanParameterMap, null));
+        log.info("call processMultipartRequest with request processor {} and beanParameterMap data {}",requestProcessorIdentifier, LogOutputHelper.toLogString(beanParameterMap));
         if (file != null) log.info("got file {}", file.getName());
         //wir versuchen zunÃ¤chst den request Prozessor aus dem requestProcessorIdentifier zu erzeugen
         IRequestProcessor requestProcessor = createProcessor(IRequestProcessor.class,

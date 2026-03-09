@@ -6,7 +6,7 @@ import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.processor.context.api.IProposalContext;
 import de.starima.pfw.base.processor.context.api.ITransformationContext;
 import de.starima.pfw.base.processor.context.domain.DefaultTransformationContext;
-import de.dzbank.recon.ms.base.processor.description.api.*;
+import de.starima.pfw.base.processor.description.api.*;
 import de.starima.pfw.base.processor.description.api.*;
 import de.starima.pfw.base.util.ProcessorUtils;
 import lombok.Getter;

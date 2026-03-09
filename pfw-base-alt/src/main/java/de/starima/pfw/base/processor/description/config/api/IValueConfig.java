@@ -1,6 +1,5 @@
 package de.starima.pfw.base.processor.description.config.api;
 
-import javax.annotation.PropertyKey;
 import java.util.List;
 
 /**
@@ -41,9 +40,9 @@ public interface IValueConfig extends IDescriptorConfig {
     void setTypeRef(ITypeRef typeRef);
 
     /**
-     * Gibt den erwarteten Zieltyp fÃ¼r die Transformation an.
-     * Dies wird fÃ¼r komplexe Typen verwendet, die zur Laufzeit eine
-     * spezielle Behandlung benÃ¶tigen.
+     * Gibt den erwarteten Zieltyp für die Transformation an.
+     * Dies wird für komplexe Typen verwendet, die zur Laufzeit eine
+     * spezielle Behandlung benötigen.
      * - Fnums: Die Enum-Klasse selbst (z.B. ProcessorScope.class)
      * - FÃ¼r Klassen: Die Klasse selbst (z.B. MyCustomClass.class)
      */

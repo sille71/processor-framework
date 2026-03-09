@@ -9,7 +9,7 @@ import de.starima.pfw.base.util.MapUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class DefaultAttributeProvider extends AbstractProcessor implements IAttr
 
     @ProcessorParameter(description = "Attribute Provider, der die Attributdefinitionen bereitstellt. Diese kÃ¶nnen dann an unterschiedlichen Stellen wiederverwendet werden.")
     private IAttributeProviderProcessor<RcnAttribute> parentAttributeProvider;
-    @ProcessorParameter(parameterFunctionProcessorPrototypeIdentifier = "jacksonGenericListParameterFunctionProcessor")
+    @ProcessorParameter()
     private List<RcnAttribute> attributes;
     @ProcessorParameter
     private String tableName = "";
@@ -46,10 +46,7 @@ public class DefaultAttributeProvider extends AbstractProcessor implements IAttr
                         try {
                             BeanUtils.copyProperties(attr1,attr2);
                             return attr1;
-                        } catch (IllegalAccessException e) {
-                            log.error("{}.getAttributes() failed", this.getIdentifier());
-                            throw new RuntimeException(e);
-                        } catch (InvocationTargetException e) {
+                        } catch (Exception e) {
                             log.error("{}.getAttributes() failed", this.getIdentifier());
                             throw new RuntimeException(e);
                         }

@@ -34,7 +34,7 @@ public interface IDescriptorConfigCreationContext extends ITaskContext {
      */
     IDescriptorConfigProvider getRootProvider();
 
-    void setRootProvider(IDescriptorConfigProvider rootProvider);
+    IDescriptorConfigCreationContext setRootProvider(IDescriptorConfigProvider rootProvider);
 
     /**
      * Der TypeRef Root-Provider (die Kette), der fÃ¼r rekursive Aufrufe verwendet wird.
@@ -44,5 +44,5 @@ public interface IDescriptorConfigCreationContext extends ITaskContext {
     /**
      * Setzt den Root-Provider. Wichtig fÃ¼r die Bootstrap-Logik in der Kette.
      */
-    void setTypeRefRootProvider(ITypeRefProvider rootProvider);
+    IDescriptorConfigCreationContext setTypeRefRootProvider(ITypeRefProvider rootProvider);
 }

@@ -8,7 +8,6 @@ import de.starima.pfw.base.processor.attribute.api.IAttributeHelperProcessor;
 import de.starima.pfw.base.processor.condition.api.ICondition;
 import de.starima.pfw.base.processor.condition.api.IConditionProcessor;
 import de.starima.pfw.base.processor.condition.domain.ConditionConfig;
-import de.starima.pfw.base.processor.formatter.api.IFormatterProviderProcessor;
 import de.starima.pfw.base.processor.locale.api.ILocalProviderProcessor;
 import de.starima.pfw.base.processor.variable.api.IVariableProcessor;
 import lombok.Getter;
@@ -25,8 +24,9 @@ public class DefaultAttributeConditionProcessor extends AbstractProcessor implem
     private ICondition<ConditionConfig> condition;
     @ProcessorParameter
     private IAttributeHelperProcessor<IAttribute, ConditionConfig> attributeHelperProcessor;
-    @ProcessorParameter
-    private IFormatterProviderProcessor formatterProviderProcessor;
+    //TODO: wird später nachgeholt
+    //@ProcessorParameter
+    //private IFormatterProviderProcessor formatterProviderProcessor;
     @ProcessorParameter
     private ILocalProviderProcessor localProviderProcessor;
     @ProcessorParameter
@@ -66,6 +66,7 @@ public class DefaultAttributeConditionProcessor extends AbstractProcessor implem
         }
 
 
+        /* TODO: wird später nachgeholt
         if (cfg.getColumnName() != null && cfg.getValue() != null && this.formatterProviderProcessor != null && this.formatterProviderProcessor.getFormatterForSubject(rcnAttribute) != null && cfg.getColumnName().equalsIgnoreCase(rcnAttribute.getName())) {
                 try {
                     return this.attributeHelperProcessor.compareAttribute(rcnAttribute, this.formatterProviderProcessor.getFormatterForSubject(rcnAttribute).parse(cfg.getValue(), this.localProviderProcessor.getLocaleForSubject(rcnAttribute)), cfg);
@@ -73,6 +74,7 @@ public class DefaultAttributeConditionProcessor extends AbstractProcessor implem
                     throw new RuntimeException(e);
                 }
         }
+         */
 
         return false;
     }

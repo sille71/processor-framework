@@ -1,23 +1,14 @@
 package de.starima.pfw.base.util;
 
-import de.dzbank.components.utils.StringComparator;
-import de.dzbank.components.utils.log.LogOutputHelper;
-import de.starima.pfw.base.processor.condition.api.IConditionProcessor;
-import de.starima.pfw.base.processor.formatter.AttributeNumberFormatter;
-import de.starima.pfw.base.processor.formatter.api.IFormatterProcessor;
-import de.starima.pfw.base.processor.formatter.api.IFormatterProviderProcessor;
 import de.starima.pfw.base.processor.locale.api.ILocalDateTimeProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -72,12 +63,11 @@ public class CalculationHelper {
             Assert.isTrue(
                     vec.length == row.length,
                     "Arguments have different length for matrix = "
-                            + LogOutputHelper.getModelAsStringBuffer(matrix,
-                            "row") + " and vec = "
-                            + LogOutputHelper.getModelAsStringBuffer(vec, " "));
+                            + LogOutputHelper.toLogString(matrix, "row") + " and vec = "
+                            + LogOutputHelper.toLogString(vec, " "));
             for (int i = 0; i < vec.length; i++) {
                 match = match
-                        && (StringComparator.compareStrings(vec[i], row[i]) == 0);
+                        && (java.util.Objects.equals(String.valueOf(vec[i]), String.valueOf(row[i])));
             }
 
             if (match)
@@ -99,20 +89,18 @@ public class CalculationHelper {
             Assert.isTrue(
                     vec.length == row.length,
                     "Arguments have different length for matrix = "
-                            + LogOutputHelper.getModelAsStringBuffer(matrix,
-                            "row") + " and vec = "
-                            + LogOutputHelper.getModelAsStringBuffer(vec, " "));
+                            + LogOutputHelper.toLogString(matrix, "row") + " and vec = "
+                            + LogOutputHelper.toLogString(vec, " "));
             for (int i = 0; i < vec.length; i++) {
                 if (row[i] == null) {
-                    match = match
-                            && (StringComparator.compareStrings(vec[i], null) == 0);
+                    match = match && (vec[i] == null);
                 } else if (row[i] instanceof Pattern) {
                     //row[i] is a pattern
                     pattern = (Pattern)row[i];
                     match = match && pattern.matcher(vec[i]).matches();
                 } else {
                     match = match
-                            && (StringComparator.compareStrings(vec[i], row[i].toString()) == 0);
+                            && (java.util.Objects.equals(String.valueOf(vec[i]), row[i].toString()));
                 }
             }
 
@@ -220,6 +208,7 @@ public class CalculationHelper {
         else if (n instanceof Date)
             return BigDecimal.valueOf(((Date)n).getTime());
         else if (n instanceof String) {
+            /*
             try {
                 AttributeNumberFormatter numberFormatter = new AttributeNumberFormatter();
                 numberFormatter.setPattern("#,##0.###");
@@ -227,6 +216,8 @@ public class CalculationHelper {
             } catch (Exception e) {
                 log.error("Can not parse {} to BigDecimal", n, e);
             }
+
+             */
         }
 
         return BigDecimal.ZERO;
@@ -238,6 +229,7 @@ public class CalculationHelper {
             return (Date)d;
         else if (d instanceof Long)
             return new Date((Long)d);
+        /*
         else if (d instanceof oracle.sql.TIMESTAMP) {
             try {
                 return new Date(((oracle.sql.TIMESTAMP)d).dateValue().getTime());
@@ -245,6 +237,8 @@ public class CalculationHelper {
                 log.error("{} is not an oracle timestamp", d);
             }
         }
+
+         */
         return null;
     }
 
@@ -283,6 +277,7 @@ public class CalculationHelper {
         return (n == null) ?  BigDecimal.ZERO : n;
     }
 
+    /* TODO: kommt in spezialisierte Klassen, bzw warten auf IFormatterProviderProcessor
     public static Date getDateFromValue(Map<String, Object> row, String attrName) throws Exception {
         Object oValue = row.get(attrName);
         if (oValue != null) {
@@ -292,10 +287,10 @@ public class CalculationHelper {
                 try {
                     return new Date(((oracle.sql.TIMESTAMP) oValue).dateValue().getTime());
                 } catch (SQLException e) {
-                    throw new Exception(String.format("%s ist kein Oracle Timestamp fÃ¼r den Datensatz %s",attrName, row.get(ReconManagerHelper.COLUMN_RECORDID)),e);
+                    throw new Exception(String.format("%s ist kein Oracle Timestamp fÃ¼r den Datensatz %s",attrName, row.get("RECORDID")),e);
                 }
             } else {
-                throw new Exception(String.format("%s ist kein Date fÃ¼r den Datensatz %s",attrName, row.get(ReconManagerHelper.COLUMN_RECORDID)));
+                throw new Exception(String.format("%s ist kein Date fÃ¼r den Datensatz %s",attrName, row.get("RECORDID")));
             }
         }
         return null;
@@ -357,4 +352,6 @@ public class CalculationHelper {
 
         return sum;
     }
+
+     */
 }

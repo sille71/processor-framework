@@ -111,3 +111,4 @@ public class PropertiesParameterProviderProcessor extends AbstractParameterProvi
         matcher.appendTail(buffer);
         return buffer.toString();
     }
+}

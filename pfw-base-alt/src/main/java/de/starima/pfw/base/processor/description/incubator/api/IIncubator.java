@@ -2,7 +2,7 @@ package de.starima.pfw.base.processor.description.incubator.api;
 
 import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.processor.description.api.IDescriptorProcessor;
-import de.dzbank.recon.ms.base.processor.description.incubator.domain.*;
+import de.starima.pfw.base.processor.description.incubator.domain.*;
 import de.starima.pfw.base.processor.description.incubator.domain.*;
 
 public interface IIncubator extends IProcessor {

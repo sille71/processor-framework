@@ -26,6 +26,10 @@ public interface IProcessor {
 	public IProcessorContext getRuntimeContext();
 	public void setRuntimeContext(IProcessorContext ctx);
 
+	public void processorOnInit();
+
+	public void processorOnRefresh();
+
 	/**
 	 * Initialisiert eine mÃ¶gliche Default beanParameterMap. Diese kann entweder direkt im Java Code verankert werden, oder sie wir in einer json Datei unter
 	 * resources/defaults/processors abgelegt. Der Name der json Datei kann in der Prozessor Annotation unter defaultBeanParameterMapFileName() definiert werden.
@@ -48,8 +52,8 @@ public interface IProcessor {
 	public  <T extends IProcessor> T  createProcessor(Class<T> clazz, String processorIdentifier, String processorType, IProcessor parentProcessor, List<Map<String,Map<String, Object>>> beanParameterMaps);
 	public  <T extends IProcessor> T  createProcessor(Class<T> clazz, String processorIdentifier, String processorType, List<Map<String,Map<String, Object>>> beanParameterMaps);
 
-	//public IReconProcessor getParentProcessor();
-	//public void setParentProcessor(IReconProcessor parentProcessor);
+	//public IProcessor getParentProcessor();
+	//public void setParentProcessor(IProcessor parentProcessor);
 	//public IInstanceProcessor getInstanceProcessor();
 
 	/**
@@ -57,7 +61,7 @@ public interface IProcessor {
 	 * @param beanid
 	 * @return
 	 */
-	//public IReconProcessor getProcessorForBeanId(String beanid);
+	//public IProcessor getProcessorForBeanId(String beanid);
 
 	/**
 	 * Ist der Prozessor ein Parameter, so hat er eine ParameterFunction, die ihn erzeugt hat, wenn die Initialisierung durch einen Prozessordescriptor erfolgt ist.

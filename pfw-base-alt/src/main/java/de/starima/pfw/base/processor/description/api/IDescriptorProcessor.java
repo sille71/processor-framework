@@ -136,7 +136,7 @@ public interface IDescriptorProcessor extends IProcessor {
      *
      * @return
      */
-    //public Map<String, List<IReconProcessor>> getParameterChildProcessors();
+    //public Map<String, List<IProcessor>> getParameterChildProcessors();
 
-    //public IReconProcessor findParameterChildProcessor(String fullBeanId);
+    //public IProcessor findParameterChildProcessor(String fullBeanId);
 }

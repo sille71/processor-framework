@@ -2,9 +2,10 @@ package de.starima.pfw.base.processor.description;
 
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.annotation.ProcessorParameter;
+import de.starima.pfw.base.domain.ProcessorScope;
 import de.starima.pfw.base.processor.context.api.ITransformationContext;
 import de.starima.pfw.base.processor.context.api.LoadStrategy;
-import de.dzbank.recon.ms.base.processor.description.api.*;
+import de.starima.pfw.base.processor.description.api.*;
 import de.starima.pfw.base.processor.description.api.*;
 import de.starima.pfw.base.util.IdentifierUtils;
 import de.starima.pfw.base.util.MapUtils;
@@ -136,7 +137,7 @@ public class DefaultStructureValueDescriptor<T extends IStructureValueDescriptor
      * Initialisiert die Parameter des beschriebenen Struktur-Objekts.
      * Diese Methode wird vom {@link DefaultParameterDescriptor} aufgerufen.
      *
-     * @param bean Das zu initialisierende Struktur-Objekt (z.B. ein IReconProcessor).
+     * @param bean Das zu initialisierende Struktur-Objekt (z.B. ein IProcessor).
      * @param parameters Die Parameter-Map.
      */
     public void initBeanParameters(Object bean, Map<String, Object> parameters) {

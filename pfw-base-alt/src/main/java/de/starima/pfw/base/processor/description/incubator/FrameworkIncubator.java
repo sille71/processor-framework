@@ -5,7 +5,7 @@ import de.starima.pfw.base.processor.description.incubator.api.IConstructSession
 import de.starima.pfw.base.processor.description.incubator.api.IDescribeSession;
 import de.starima.pfw.base.processor.description.incubator.api.IEditSession;
 import de.starima.pfw.base.processor.description.incubator.api.IIncubator;
-import de.dzbank.recon.ms.base.processor.description.incubator.domain.*;
+import de.starima.pfw.base.processor.description.incubator.domain.*;
 import de.starima.pfw.base.processor.description.incubator.domain.*;
 
 public class FrameworkIncubator extends AbstractProcessor implements IIncubator {

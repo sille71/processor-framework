@@ -21,6 +21,7 @@ public interface ITransformationContext extends ITaskContext {
      * Gibt die bereits aufgelÃ¶ste Instanz des Ã¼bergeordneten Ziel Objekts zurÃ¼ck, dessen Feld bestÃ¼ckt werden soll.
      */
     Object getTargetObject();
+    void setTargetObject(Object target);
 
     ProcessorParameter getProcessorParameterAnnotation();
 

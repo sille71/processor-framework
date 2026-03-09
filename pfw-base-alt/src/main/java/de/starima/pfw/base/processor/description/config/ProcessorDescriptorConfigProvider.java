@@ -3,7 +3,7 @@ package de.starima.pfw.base.processor.description.config;
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.processor.AbstractProcessor;
-import de.dzbank.recon.ms.base.processor.description.config.api.*;
+import de.starima.pfw.base.processor.description.config.api.*;
 import de.starima.pfw.base.processor.description.config.api.*;
 import de.starima.pfw.base.util.MapUtils;
 import de.starima.pfw.base.util.ProcessorUtils;

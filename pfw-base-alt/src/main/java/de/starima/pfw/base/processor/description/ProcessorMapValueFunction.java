@@ -23,7 +23,7 @@ import java.util.Map;
 @Slf4j
 @Getter
 @Setter
-@Processor(description = "Transformiert eine Liste von ProzessorIdentifiern in eine Liste von Prozessoren. Dabei wird aktuell nur das Interface IReconProcessor geprÃ¼ft. Der domainProcessor ist auf die aktuell geforderte Prozessorklasse bzw Interface zu spezialisieren. siehe ProcessorPrototypeIdentifierSet")
+@Processor(description = "Transformiert eine Liste von ProzessorIdentifiern in eine Liste von Prozessoren. Dabei wird aktuell nur das Interface IProcessor geprÃ¼ft. Der domainProcessor ist auf die aktuell geforderte Prozessorklasse bzw Interface zu spezialisieren. siehe ProcessorPrototypeIdentifierSet")
 public class ProcessorMapValueFunction extends AbstractValueFunction<Object,Map<String, IProcessor>>  {
     public static boolean isResponsibleFor(Field field) {
         // wir deaktivieren diese Funktion
@@ -38,11 +38,11 @@ public class ProcessorMapValueFunction extends AbstractValueFunction<Object,Map<
                     Class<?> processorClass = null;
                     // keys und/oder values kÃ¶nnen wieder parametrisiert sein, in diesem Fall fragen wir nach getRawType!
                     if (valueType instanceof ParameterizedType)
-                        processorClass = IReconProcessor.class.getClassLoader().loadClass(((ParameterizedType)valueType).getRawType().getTypeName());
+                        processorClass = IProcessor.class.getClassLoader().loadClass(((ParameterizedType)valueType).getRawType().getTypeName());
                     else
-                        processorClass = IReconProcessor.class.getClassLoader().loadClass(valueType.getTypeName());
+                        processorClass = IProcessor.class.getClassLoader().loadClass(valueType.getTypeName());
 
-                    return IReconProcessor.class.isAssignableFrom(processorClass);
+                    return IProcessor.class.isAssignableFrom(processorClass);
                 } catch (ClassNotFoundException cce) {
                     log.debug("Could not find class {} of field {}", fieldArgTypes[0], field.getName(), cce);
                 }

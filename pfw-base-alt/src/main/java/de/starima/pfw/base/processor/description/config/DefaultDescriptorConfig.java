@@ -1,5 +1,6 @@
 package de.starima.pfw.base.processor.description.config;
 
+import de.starima.pfw.base.domain.ProcessorScope;
 import de.starima.pfw.base.processor.description.config.api.IDescriptorConfig;
 import lombok.Builder;
 import lombok.Getter;

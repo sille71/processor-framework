@@ -20,7 +20,7 @@ import java.util.Map;
 @Getter @Setter
 @Processor
 public class AttributeExpressionModelMapper extends AbstractProcessor implements IAttributeModelMapperProcessor {
-    @ProcessorParameter(parameterFunctionProcessorPrototypeIdentifier = "jacksonParameterFunctionProcessor")
+    @ProcessorParameter()
     private Map<String ,String> attributeExpressionMap;
 
     @Override

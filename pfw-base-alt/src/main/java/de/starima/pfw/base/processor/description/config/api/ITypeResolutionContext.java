@@ -18,5 +18,5 @@ public interface ITypeResolutionContext extends ITaskContext {
     /**
      * Setzt den Root-Provider. Wichtig fÃ¼r die Bootstrap-Logik in der Kette.
      */
-    void setRootProvider(ITypeRefProvider rootProvider);
+    ITypeResolutionContext setRootProvider(ITypeRefProvider rootProvider);
 }

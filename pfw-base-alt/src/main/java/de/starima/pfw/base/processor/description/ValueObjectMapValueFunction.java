@@ -33,7 +33,7 @@ public class ValueObjectMapValueFunction extends AbstractValueFunction<Object, M
         /*
         if (Map.class.isAssignableFrom(field.getType())) {
             // PrÃ¼ft, ob der Wert-Typ der Map ein @ValueObject ist.
-            return ProcessorUtils.getGenericType(field).isAnnotationPresent(de.dzbank.recon.ms.base.annotation.ValueObject.class);
+            return ProcessorUtils.getGenericType(field).isAnnotationPresent(de.starima.pfw.base.annotation.ValueObject.class);
         }
         return false;
         
