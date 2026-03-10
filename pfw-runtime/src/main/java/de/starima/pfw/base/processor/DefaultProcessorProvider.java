@@ -1,10 +1,13 @@
 package de.starima.pfw.base.processor;
 
 import de.starima.pfw.base.annotation.Processor;
+import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.domain.ProcessorScope;
 import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.processor.api.IProcessorProvider;
 import de.starima.pfw.base.processor.context.api.IProcessorContext;
+import de.starima.pfw.base.processor.description.incubator.DefaultInstanceCreationContext;
+import de.starima.pfw.base.processor.description.incubator.api.IInstanceProvider;
 import de.starima.pfw.base.util.ProcessorUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Processor
 public class DefaultProcessorProvider extends DefaultBeanProvider implements IProcessorProvider {
+
+	/**
+	 * Optionale InstanceProviderChain — wenn gesetzt, wird die Prozessor-Erzeugung
+	 * an die neue Chain delegiert (Migration vom alten ProcessorUtils-basierten Weg).
+	 */
+	@ProcessorParameter(description = "Optionale InstanceProviderChain für die neue Prozessor-Erzeugung", ignoreInitialization = true)
+	private IInstanceProvider instanceProviderChain;
 
 	@Override
 	public <T extends IProcessor> T getProcessorForType(Class<T> clazz, String processorType, IProcessorContext ctx, IProcessor parentProcessor) {
@@ -79,6 +89,21 @@ public class DefaultProcessorProvider extends DefaultBeanProvider implements IPr
 
 	public IProcessor getProcessorForBeanIdWithType(String beanid, String type, IProcessorContext ctx, IProcessor parentProcessor) {
 		log.debug("getProcessorForBeanIdWithType({}, {})", beanid, type);
+
+		// Neuer Pfad: InstanceProviderChain (wenn verfügbar)
+		if (instanceProviderChain != null) {
+			try {
+				DefaultInstanceCreationContext context = DefaultInstanceCreationContext.forProvide(
+						IProcessor.class, beanid, instanceProviderChain, ctx);
+				IProcessor result = (IProcessor) instanceProviderChain.provide(context);
+				if (result != null && type != null) {
+					ProcessorUtils.registerProcessorWithType(result, type, result.getRuntimeContext());
+				}
+				return result;
+			} catch (Exception e) {
+				log.warn("InstanceProviderChain konnte Prozessor '{}' nicht erzeugen, Fallback auf alte Logik: {}", beanid, e.getMessage());
+			}
+		}
 
 		try {
 			// Note: the beanId may consist of the prototype bean name and the
