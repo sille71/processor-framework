@@ -13,12 +13,14 @@ import de.starima.pfw.base.processor.description.incubator.api.IDescribeSession;
 import de.starima.pfw.base.processor.description.incubator.api.IEditSession;
 import de.starima.pfw.base.processor.description.incubator.api.IIncubator;
 import de.starima.pfw.base.processor.description.incubator.api.IInstanceProvider;
+import de.starima.pfw.base.processor.description.incubator.api.IPlaceholderDescriptor;
 import de.starima.pfw.base.processor.description.incubator.domain.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Standard-Implementierung des {@link IIncubator}.
@@ -149,9 +151,87 @@ public class FrameworkIncubator extends AbstractProcessor implements IIncubator 
 
     @Override
     public IEditSession startEdit(IEditSource source, IEditPolicy policy) {
-        // Phase 4: Edit-Sessions (Workspace, Cursor-Stages)
-        log.debug("startEdit() — noch nicht implementiert (Phase 4)");
-        return null;
+        if (instanceProviderChain == null) {
+            log.warn("FrameworkIncubator: instanceProviderChain nicht konfiguriert");
+            return null;
+        }
+
+        Object sourceObject = source != null ? source.getObject() : null;
+
+        // 1. Root-Descriptor aufbauen (ROOT_HEADER Stage)
+        IDescriptorProcessor rootDescriptor = buildRootHeaderForEdit(sourceObject);
+
+        // 2. Workspace aufbauen
+        DefaultDescriptorWorkspace workspace = new DefaultDescriptorWorkspace(
+                rootDescriptor, instanceProviderChain);
+
+        // 3. Slot-Placeholders für alle bekannten Parameter erzeugen
+        addSlotPlaceholders(workspace, rootDescriptor);
+
+        // 4. Session erstellen
+        String sessionId = UUID.randomUUID().toString();
+        DefaultEditSession session = new DefaultEditSession(sessionId, workspace);
+
+        log.debug("startEdit: Session '{}' gestartet, Root: {}, {} Placeholders",
+                sessionId,
+                rootDescriptor != null ? rootDescriptor.getClass().getSimpleName() : "null",
+                workspace.getPlaceholders().size());
+
+        return session;
+    }
+
+    /**
+     * Baut den Root-Descriptor für eine Edit-Session auf (ROOT_HEADER Stage).
+     *
+     * <p>Auflösungsreihenfolge:
+     * <ol>
+     *   <li>Source-Objekt ist bereits ein IDescriptorProcessor → direkt nutzen</li>
+     *   <li>Source-Objekt ist IProcessor → generateProcessorDescriptorInstance(SHALLOW)</li>
+     *   <li>Fallback: ROOT_HEADER-Placeholder</li>
+     * </ol>
+     */
+    private IDescriptorProcessor buildRootHeaderForEdit(Object sourceObject) {
+        if (sourceObject instanceof IDescriptorProcessor descriptorProcessor) {
+            return descriptorProcessor;
+        }
+        if (sourceObject instanceof IProcessor processor) {
+            try {
+                IProcessorDescriptor descriptor =
+                        processor.generateProcessorDescriptorInstance(LoadStrategy.SHALLOW);
+                if (descriptor instanceof IDescriptorProcessor descriptorProcessor) {
+                    return descriptorProcessor;
+                }
+            } catch (Exception e) {
+                log.warn("startEdit: generateProcessorDescriptorInstance fehlgeschlagen: {}", e.getMessage());
+            }
+        }
+        // Fallback: ROOT_HEADER-Placeholder
+        log.debug("startEdit: Kein Descriptor ermittelbar — verwende ROOT_HEADER-Placeholder");
+        return new DefaultPlaceholderDescriptor(
+                IPlaceholderDescriptor.PlaceholderKind.CHILDREN,
+                "root",
+                BuildStage.ROOT_HEADER);
+    }
+
+    /**
+     * Fügt Slot-Placeholders für die Parameter-Slots des Root-Descriptors hinzu.
+     *
+     * <p>Für jeden bekannten Parameter-Namen wird ein SLOT-Placeholder erstellt.
+     * In Phase 5+ werden die Parameter-Namen aus dem Descriptor gelesen.
+     */
+    private void addSlotPlaceholders(DefaultDescriptorWorkspace workspace,
+                                     IDescriptorProcessor root) {
+        if (root == null || root instanceof IPlaceholderDescriptor) return;
+
+        // CHILDREN-Placeholder als Stellvertreter für alle Slots
+        DefaultPlaceholderDescriptor slotsPlaceholder = new DefaultPlaceholderDescriptor(
+                IPlaceholderDescriptor.PlaceholderKind.CHILDREN,
+                (root.getPath() != null ? root.getPath() : root.getIdentifier()) + ".__slots__",
+                BuildStage.ROOT_SLOTS_ENUM);
+
+        workspace.replace(slotsPlaceholder.getTargetPath(), slotsPlaceholder);
+        log.debug("addSlotPlaceholders: CHILDREN-Placeholder für Root '{}' hinzugefügt",
+                root.getIdentifier());
     }
 
     // =========================================================================
