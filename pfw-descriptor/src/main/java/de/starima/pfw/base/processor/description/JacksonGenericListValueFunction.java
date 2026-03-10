@@ -22,8 +22,8 @@ import java.util.List;
 public class JacksonGenericListValueFunction extends AbstractValueFunction<Object,List<?>>  {
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Field field = transformationContext.getTargetField();
-        ProcessorParameter p = transformationContext.getProcessorParameterAnnotation();
+        Field field = transformationContext.getFieldToResolve();
+        ProcessorParameter p = transformationContext.getProcessorParameter();
         if (p == null && field != null) p = field.getAnnotation(ProcessorParameter.class);
         if (p == null) return false;
         return StringUtils.hasLength(p.valueFunctionPrototypeIdentifier()) && p.valueFunctionPrototypeIdentifier().equalsIgnoreCase(ProcessorUtils.getPrototypeIdentifierFromClass(JacksonGenericListValueFunction.class));
@@ -59,7 +59,7 @@ public class JacksonGenericListValueFunction extends AbstractValueFunction<Objec
     @Override
     public List<?> transformValue(ITransformationContext transformationContext, Object input) {
         if (!isResponsibleForSubject(transformationContext)) {
-            log.warn("{}.transformValue: Can not transform value {}! Processor is not responsible for subject {}.", this.getIdentifier(), input, transformationContext.getTargetField());
+            log.warn("{}.transformValue: Can not transform value {}! Processor is not responsible for subject {}.", this.getIdentifier(), input, transformationContext.getFieldToResolve());
             return null;
         }
         if (!isResponsibleForInput(input)) {
@@ -70,12 +70,12 @@ public class JacksonGenericListValueFunction extends AbstractValueFunction<Objec
 
         //wir Ã¼berprÃ¼fen zunÃ¤chst, ob der input schon vom richtigen List Typ ist
         try {
-            Object backUp = transformationContext.getTargetField().get(input);
-            transformationContext.getTargetField().set(transformationContext.getTargetObject(), input);
-            transformationContext.getTargetField().set(backUp, transformationContext.getTargetObject());
+            Object backUp = transformationContext.getFieldToResolve().get(input);
+            transformationContext.getFieldToResolve().set(transformationContext.getObjectToResolve(), input);
+            transformationContext.getFieldToResolve().set(backUp, transformationContext.getObjectToResolve());
             return (List<?>) input;
         } catch (Exception e) {
-            log.debug("input is not of destination type for field {}", transformationContext.getTargetField());
+            log.debug("input is not of destination type for field {}", transformationContext.getFieldToResolve());
         }
 
         //wir transformieren
@@ -84,7 +84,7 @@ public class JacksonGenericListValueFunction extends AbstractValueFunction<Objec
             ObjectMapper objectMapper = new ObjectMapper();
             jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(input);
             log.trace("transform list value {}", jsonString);
-            ParameterizedType type = (ParameterizedType) transformationContext.getTargetField().getGenericType();
+            ParameterizedType type = (ParameterizedType) transformationContext.getFieldToResolve().getGenericType();
             return objectMapper.readValue(jsonString, objectMapper.getTypeFactory().constructCollectionType(List.class, objectMapper.getTypeFactory().constructType(type.getActualTypeArguments()[0])));
         } catch (Exception e) {
             log.error("Can not transform value {}", transformationContext, e);

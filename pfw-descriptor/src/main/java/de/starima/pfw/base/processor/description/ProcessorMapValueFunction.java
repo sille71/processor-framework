@@ -82,7 +82,7 @@ public class ProcessorMapValueFunction extends AbstractValueFunction<Object,Map<
 
     @Override
     public boolean isResponsibleForSubject(ITransformationContext transformationContext) {
-        return transformationContext != null && isResponsibleFor(transformationContext.getTargetField());
+        return transformationContext != null && isResponsibleFor(transformationContext.getFieldToResolve());
     }
 
     private boolean isInputString(Object input) {
@@ -162,8 +162,8 @@ public class ProcessorMapValueFunction extends AbstractValueFunction<Object,Map<
 
             IProcessor parent = null;
             IProcessorContext ctx = getRuntimeContext();
-            if (transformationContext.getTargetObject() != null && transformationContext.getTargetObject() instanceof IProcessor) {
-                parent = (IProcessor)transformationContext.getTargetObject();
+            if (transformationContext.getObjectToResolve() != null && transformationContext.getObjectToResolve() instanceof IProcessor) {
+                parent = (IProcessor)transformationContext.getObjectToResolve();
                 ctx = parent.getRuntimeContext();
             }
 

@@ -21,8 +21,8 @@ import java.util.Map;
 public class ProcessorValueFunction extends AbstractValueFunction<Object, IProcessor> {
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Class<?> clazz = transformationContext.getTargetType();
-        Field field = transformationContext.getTargetField();
+        Class<?> clazz = transformationContext.getRawType();
+        Field field = transformationContext.getFieldToResolve();
         Class<?> valueType = field != null ? field.getType() : clazz;
         return ProcessorUtils.isConsideredProcessor(valueType);
     }
@@ -104,8 +104,8 @@ public class ProcessorValueFunction extends AbstractValueFunction<Object, IProce
         if (isInputString(input)) {
             IProcessor parent = null;
             IProcessorContext ctx = getRuntimeContext();
-            if (transformationContext.getTargetObject() != null && transformationContext.getTargetObject() instanceof IProcessor) {
-                parent = (IProcessor)transformationContext.getTargetObject();
+            if (transformationContext.getObjectToResolve() != null && transformationContext.getObjectToResolve() instanceof IProcessor) {
+                parent = (IProcessor)transformationContext.getObjectToResolve();
                 ctx = parent.getRuntimeContext();
             }
 

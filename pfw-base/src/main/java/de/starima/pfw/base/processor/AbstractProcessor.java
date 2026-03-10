@@ -226,7 +226,7 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		if (processorDescriptor != null) return processorDescriptor.extractEffectiveParameters(this);
 		ITransformationContext transformationContext = newTransformationContext();
 		if (transformationContext == null) return new HashMap<>();
-		transformationContext.setTargetObject(this);
+		transformationContext.setObjectToResolve(this);
 		transformationContext.setRuntimeContext(getRuntimeContext());
 		return ProcessorUtils.extractEffectiveParameters(transformationContext);
 	}
@@ -241,7 +241,7 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 
 		ITransformationContext startContext = newTransformationContext();
 		if (startContext == null) return new HashMap<>();
-		startContext.setTargetObject(this);
+		startContext.setObjectToResolve(this);
 		startContext.setRuntimeContext(getRuntimeContext());
 		startContext.setLoadStrategy(LoadStrategy.DEEP);
 

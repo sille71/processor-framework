@@ -20,8 +20,8 @@ import java.util.Map;
 public class IntegerValueFunction extends AbstractValueFunction<Object, Integer>  {
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Class<?> clazz = transformationContext.getTargetType();
-        Field field = transformationContext.getTargetField();
+        Class<?> clazz = transformationContext.getRawType();
+        Field field = transformationContext.getFieldToResolve();
         Class<?> valueType = field != null ? field.getType() : clazz;
         return valueType != null &&  (int.class.isAssignableFrom(valueType) || Integer.class.isAssignableFrom(valueType));
     }

@@ -166,8 +166,8 @@ public class DefaultParameterDescriptor extends DescriptorProcessor implements I
                 Field field = ProcessorUtils.getDeclaredFieldForProcessorClass(bean.getClass(), getPropertyName());
                 if (field != null) {
                     DefaultTransformationContext transformationContext = new DefaultTransformationContext();
-                    transformationContext.setTargetObject(bean);
-                    transformationContext.setTargetField(field);
+                    transformationContext.setObjectToResolve(bean);
+                    transformationContext.setFieldToResolve(field);
                     Object transformedValue = getValueDescriptor().getValueFunction().transformValue(transformationContext, parameterValue);
                     field.set(bean, transformedValue);
                 }
@@ -183,8 +183,8 @@ public class DefaultParameterDescriptor extends DescriptorProcessor implements I
             if (getValueDescriptor() != null && getValueDescriptor().getValueFunction() != null) {
                 Field field = ProcessorUtils.getDeclaredFieldForProcessorClass(bean.getClass(),getPropertyName());
                 DefaultTransformationContext transformationContext = new DefaultTransformationContext();
-                transformationContext.setTargetObject(bean);
-                transformationContext.setTargetField(field);
+                transformationContext.setObjectToResolve(bean);
+                transformationContext.setFieldToResolve(field);
                 getValueDescriptor().setRawValue(getValueDescriptor().getValueFunction().reverseTransformValue(transformationContext, field.get(bean)));
             }
         } catch (IllegalAccessException e) {
@@ -200,8 +200,8 @@ public class DefaultParameterDescriptor extends DescriptorProcessor implements I
             if (getValueDescriptor() != null && getValueDescriptor().getValueFunction() != null && !isIgnoreExtractParameter()) {
                 Field field = ProcessorUtils.getDeclaredFieldForProcessorClass(bean.getClass(),getPropertyName());
                 DefaultTransformationContext transformationContext = new DefaultTransformationContext();
-                transformationContext.setTargetObject(bean);
-                transformationContext.setTargetField(field);
+                transformationContext.setObjectToResolve(bean);
+                transformationContext.setFieldToResolve(field);
                 parameters.put(getParameterName(), getValueDescriptor().getValueFunction().reverseTransformValue(transformationContext, field.get(bean)));
             }
         } catch (IllegalAccessException e) {
@@ -233,7 +233,7 @@ public class DefaultParameterDescriptor extends DescriptorProcessor implements I
             return;
         }
 
-        Object parentBean = context.getTargetObject();
+        Object parentBean = context.getObjectToResolve();
         if (parentBean == null) {
             return;
         }
@@ -245,9 +245,9 @@ public class DefaultParameterDescriptor extends DescriptorProcessor implements I
 
             // 2. Erzeuge einen neuen, prÃ¤zisen Kontext fÃ¼r diesen Wert.
             DefaultTransformationContext childContext = new DefaultTransformationContext();
-            childContext.setTargetObject(childValue);
-            childContext.setTargetField(field);
-            childContext.setProcessorParameterAnnotation(field.getAnnotation(ProcessorParameter.class));
+            childContext.setObjectToResolve(childValue);
+            childContext.setFieldToResolve(field);
+            childContext.setProcessorParameter(field.getAnnotation(ProcessorParameter.class));
             childContext.setRuntimeContext(context.getRuntimeContext());
             childContext.setLoadStrategy(context.getLoadStrategy());
 
@@ -266,8 +266,8 @@ public class DefaultParameterDescriptor extends DescriptorProcessor implements I
             if (getValueDescriptor() != null && getValueDescriptor().getValueFunction() != null && !isIgnoreExtractParameter()) {
                 Field field = ProcessorUtils.getDeclaredFieldForProcessorClass(bean.getClass(),getPropertyName());
                 DefaultTransformationContext transformationContext = new DefaultTransformationContext();
-                transformationContext.setTargetObject(bean);
-                transformationContext.setTargetField(field);
+                transformationContext.setObjectToResolve(bean);
+                transformationContext.setFieldToResolve(field);
                 return getValueDescriptor().getValueFunction().extractEffectiveParameterMap(transformationContext, field.get(bean));
             }
         } catch (IllegalAccessException e) {

@@ -44,8 +44,8 @@ public class ValueObjectValueFunction extends AbstractValueFunction<Object, Obje
 
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Class<?> clazz = transformationContext.getTargetType();
-        Field field = transformationContext.getTargetField();
+        Class<?> clazz = transformationContext.getRawType();
+        Field field = transformationContext.getFieldToResolve();
         Class<?> valueType = field != null ? field.getType() : clazz;
         return ProcessorUtils.isConsideredValueObject(valueType);
     }
@@ -60,7 +60,7 @@ public class ValueObjectValueFunction extends AbstractValueFunction<Object, Obje
         if (input == null || "".equals(input.toString())) return null;
 
         try {
-            if (transformationContext.getTargetField().getType().isInstance(input)) {
+            if (transformationContext.getFieldToResolve().getType().isInstance(input)) {
                 return input;
             }
 
@@ -70,9 +70,9 @@ public class ValueObjectValueFunction extends AbstractValueFunction<Object, Obje
 
             }
             // Nutze den aufgewerteten BeanProvider, um die Instanz zu erzeugen UND zu initialisieren.
-            return beanProvider.getBeanForId(transformationContext.getTargetField().getType(), input.toString());
+            return beanProvider.getBeanForId(transformationContext.getFieldToResolve().getType(), input.toString());
         } catch (Exception e) {
-            log.error("Konnte ValueObject fÃ¼r ID '{}' und Typ '{}' nicht erzeugen.", input, transformationContext.getTargetField().getType().getName(), e);
+            log.error("Konnte ValueObject fÃ¼r ID '{}' und Typ '{}' nicht erzeugen.", input, transformationContext.getFieldToResolve().getType().getName(), e);
             return null;
         }
     }
@@ -100,7 +100,7 @@ public class ValueObjectValueFunction extends AbstractValueFunction<Object, Obje
 
         // ULTIMATIVER FALLBACK: Keine Fallback-Funktion konfiguriert.
         log.warn("Konnte keinen Identifier fÃ¼r ValueObject vom Typ {} im Kontext von Parameter '{}' ermitteln. Flache Parameter-Map wird durch die Fallback-ValueFunction erzeugt.",
-                value.getClass().getName(), transformationContext.getTargetField().getName());
+                value.getClass().getName(), transformationContext.getFieldToResolve().getName());
         return null;
     }
 
@@ -113,7 +113,7 @@ public class ValueObjectValueFunction extends AbstractValueFunction<Object, Obje
             return parent.extractEffectiveParameterMap(transformationContext, value);
         }
         DefaultTransformationContext context = new DefaultTransformationContext();
-        context.setTargetObject(value);
+        context.setObjectToResolve(value);
         context.setRuntimeContext(transformationContext.getRuntimeContext());
         return ProcessorUtils.extractEffectiveParameterMap(context);
     }
@@ -129,7 +129,7 @@ public class ValueObjectValueFunction extends AbstractValueFunction<Object, Obje
         }
         //anderenfalls erledigt das die ProcessorUtils
         DefaultTransformationContext context = new DefaultTransformationContext();
-        context.setTargetObject(value);
+        context.setObjectToResolve(value);
         return ProcessorUtils.extractEffectiveParameterMap(context);
     }
 

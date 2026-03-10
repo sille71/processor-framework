@@ -81,7 +81,7 @@ public class DefaultMapValueDescriptor extends DefaultValueDescriptor implements
 
     @Override
     public void extractEffectiveParameterMap(ITransformationContext context, Map<String, Map<String, Object>> beanParameterMap, Set<Object> visited) {
-        Object bean = context.getTargetObject();
+        Object bean = context.getObjectToResolve();
 
         // 1. PrÃ¼fen, ob es etwas zu tun gibt.
         if (bean == null || !(bean instanceof Map) || context.getLoadStrategy() != LoadStrategy.DEEP) {
@@ -101,16 +101,16 @@ public class DefaultMapValueDescriptor extends DefaultValueDescriptor implements
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             // --- 3a. Extraktion fÃ¼r den SCHLSSEL ---
             DefaultTransformationContext keyContext = new DefaultTransformationContext();
-            keyContext.setTargetObject(entry.getKey());
-            keyContext.setTargetField(context.getTargetField());
+            keyContext.setObjectToResolve(entry.getKey());
+            keyContext.setFieldToResolve(context.getFieldToResolve());
             keyContext.setRuntimeContext(context.getRuntimeContext());
             keyContext.setLoadStrategy(context.getLoadStrategy());
             keyDescriptor.extractEffectiveParameterMap(keyContext, beanParameterMap, visited);
 
             // --- 3b. Extraktion fÃ¼r den WERT ---
             DefaultTransformationContext valueContext = new DefaultTransformationContext();
-            valueContext.setTargetObject(entry.getValue());
-            valueContext.setTargetField(context.getTargetField());
+            valueContext.setObjectToResolve(entry.getValue());
+            valueContext.setFieldToResolve(context.getFieldToResolve());
             valueContext.setRuntimeContext(context.getRuntimeContext());
             valueContext.setLoadStrategy(context.getLoadStrategy());
             valueDescriptor.extractEffectiveParameterMap(valueContext, beanParameterMap, visited);

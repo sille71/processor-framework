@@ -26,7 +26,7 @@ public class DefaultDescriptorConstructorContext extends DefaultTaskContext impl
     private Class<?> sourceType;
     private LoadStrategy loadStrategy = LoadStrategy.LAZY;
     private String descriptorPrototypeIdentifier;
-    private ProcessorParameter processorParameterAnnotation;
+    private ProcessorParameter processorParameter;
     private Optional<IDescriptorProcessor> parentDescriptor;
     private Optional<IProcessor> parentProcessor;
     private Set<Class<?>> visitedTypes = new HashSet<>();
@@ -46,7 +46,7 @@ public class DefaultDescriptorConstructorContext extends DefaultTaskContext impl
         this.descriptorPrototypeIdentifier = other.descriptorPrototypeIdentifier;
         this.parentDescriptor = other.parentDescriptor;
         this.parentProcessor = other.parentProcessor;
-        this.processorParameterAnnotation = other.processorParameterAnnotation;
+        this.processorParameter = other.processorParameter;
         this.visitedTypes = new HashSet<>(other.visitedTypes);
     }
 
@@ -73,7 +73,7 @@ public class DefaultDescriptorConstructorContext extends DefaultTaskContext impl
             clone.setParentDescriptor(source.getParentDescriptor());
             clone.setParentProcessor(source.getParentProcessor());
             clone.setDescriptorPrototypeIdentifier(source.getDescriptorPrototypeIdentifier());
-            clone.setProcessorParameterAnnotation(source.getProcessorParameterAnnotation());
+            clone.setProcessorParameter(source.getProcessorParameter());
             clone.setVisitedTypes(new HashSet<>(source.getVisitedTypes()));
             return clone;
         }

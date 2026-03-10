@@ -6,42 +6,68 @@ import de.starima.pfw.base.processor.description.api.IValueDescriptor;
 import de.starima.pfw.base.processor.description.api.IValueFunction;
 
 import java.lang.reflect.Field;
-import java.util.Optional;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public interface ITransformationContext extends ITaskContext {
-    /**
-     * Gibt das Zielfeld im Bean zurÃ¼ck, in das der Wert injiziert werden soll.
-     * Daraus kÃ¶nnen Zieltyp, generische Typen und Annotationen ausgelesen werden.
-     */
-    Field getTargetField();
 
-    Class<?> getTargetType();
+    // --- Kern-Methoden ---
 
     /**
-     * Gibt die bereits aufgelÃ¶ste Instanz des Ã¼bergeordneten Ziel Objekts zurÃ¼ck, dessen Feld bestÃ¼ckt werden soll.
+     * Der aufzulösende Java-Typ.
+     * Kann ein {@code Class<?>}, {@code ParameterizedType} (z.B. {@code List<IProcessor>}),
+     * {@code GenericArrayType}, etc. sein.
      */
-    Object getTargetObject();
-    void setTargetObject(Object target);
-
-    ProcessorParameter getProcessorParameterAnnotation();
+    Type getTypeToResolve();
+    void setTypeToResolve(Type type);
 
     /**
-     * Gibt den Ã¼bergeordneten Deskriptor zurÃ¼ck, falls dieser Kontext innerhalb
-     * einer vollstÃ¤ndigen Deskriptor-Hierarchie operiert.
-     * Optional, da er im "On-Demand"-Fall nicht existiert.
+     * Das Java-Objekt, das untersucht werden soll.
+     * Bei provide(): die bereits vorhandene Bean-Instanz (oder null).
+     * Bei extract(): das lebendige Objekt.
      */
-    Optional<IDescriptorProcessor> getParentDescriptor();
-
-    Optional<IValueDescriptor> getValueDescriptor();
-
-    Optional<IValueFunction<ITransformationContext, Object, Object>> getValueFunction();
+    Object getObjectToResolve();
+    void setObjectToResolve(Object object);
 
     /**
-     * Gibt die Ladestrategie fÃ¼r die aktuelle Transformation an (z.B. DEEP, SHALLOW).
-     * Dies steuert die Rekursionstiefe bei der Extraktion von Parametern.
+     * Das Feld, in das der Wert injiziert (provide) bzw. aus dem gelesen wird (extract).
+     * Trägt Generics-Information und die @ProcessorParameter-Annotation.
      */
+    Field getFieldToResolve();
+    void setFieldToResolve(Field field);
+
+    /**
+     * Die @ProcessorParameter-Annotation des Feldes.
+     */
+    ProcessorParameter getProcessorParameter();
+    void setProcessorParameter(ProcessorParameter processorParameter);
+
+    // --- Descriptor-Bezug (kein Optional) ---
+
+    IValueDescriptor getValueDescriptor();
+    void setValueDescriptor(IValueDescriptor valueDescriptor);
+
+    IDescriptorProcessor getParentDescriptor();
+
+    @SuppressWarnings("rawtypes")
+    IValueFunction getValueFunction();
+
+    // --- Laden ---
+
     LoadStrategy getLoadStrategy();
     void setLoadStrategy(LoadStrategy loadStrategy);
 
-    //Type getTargetType();
+    // --- Convenience ---
+
+    /**
+     * Extrahiert die raw {@code Class<?>} aus dem Type.
+     * Für ParameterizedType: rawType. Für Class: direkt. Sonst: null.
+     */
+    default Class<?> getRawType() {
+        Type type = getTypeToResolve();
+        if (type instanceof Class<?> c) return c;
+        if (type instanceof ParameterizedType pt
+                && pt.getRawType() instanceof Class<?> raw) return raw;
+        return null;
+    }
 }

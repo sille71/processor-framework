@@ -48,7 +48,7 @@ public class ValueObjectMapValueFunction extends AbstractValueFunction<Object, M
 
     @Override
     public boolean isResponsibleForSubject(ITransformationContext transformationContext) {
-        return transformationContext != null && isResponsibleFor(transformationContext.getTargetField());
+        return transformationContext != null && isResponsibleFor(transformationContext.getFieldToResolve());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ValueObjectMapValueFunction extends AbstractValueFunction<Object, M
 
         if (input instanceof Map) {
             Map<String, Object> result = new HashMap<>();
-            Class<?> valueType = ProcessorUtils.getGenericType(transformationContext.getTargetField());
+            Class<?> valueType = ProcessorUtils.getGenericType(transformationContext.getFieldToResolve());
 
             for (Map.Entry<?, ?> entry : ((Map<?, ?>) input).entrySet()) {
                 String key = entry.getKey().toString();

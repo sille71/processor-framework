@@ -21,7 +21,7 @@ import java.util.List;
 public class ProcessorPrototypeIdentifierSet extends AbstractProcessor implements ISetProcessor<Object> {
     public static boolean isResponsibleFor(Field field) {
         DefaultTransformationContext context = new DefaultTransformationContext();
-        context.setTargetField(field);
+        context.setFieldToResolve(field);
         return ProcessorValueFunction.isResponsibleFor(context);
     }
 

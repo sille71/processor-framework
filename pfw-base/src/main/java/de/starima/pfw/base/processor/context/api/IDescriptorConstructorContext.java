@@ -56,7 +56,7 @@ public interface IDescriptorConstructorContext extends ITaskContext {
      */
     String getDescriptorPrototypeIdentifier();
 
-    ProcessorParameter getProcessorParameterAnnotation();
+    ProcessorParameter getProcessorParameter();
 
     /**
      * Der identifier des ParentDescriptors

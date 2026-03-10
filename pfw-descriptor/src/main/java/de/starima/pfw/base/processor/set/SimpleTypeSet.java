@@ -23,7 +23,7 @@ import java.util.List;
 public class SimpleTypeSet extends AbstractProcessor implements ISetProcessor<Object> {
     public static boolean isResponsibleFor(Field field) {
         DefaultTransformationContext context = new DefaultTransformationContext();
-        context.setTargetField(field);
+        context.setFieldToResolve(field);
         return IntegerValueFunction.isResponsibleFor(context)
                 || DoubleValueFunction.isResponsibleFor(context)
                 || BooleanValueFunction.isResponsibleFor(context);

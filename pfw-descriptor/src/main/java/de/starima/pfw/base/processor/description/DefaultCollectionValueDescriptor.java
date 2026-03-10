@@ -61,7 +61,7 @@ public class DefaultCollectionValueDescriptor extends DefaultValueDescriptor imp
     }
 
     public void extractEffectiveParameterMap(ITransformationContext context, Map<String, Map<String, Object>> beanParameterMap, Set<Object> visited) {
-        Object bean = context.getTargetObject();
+        Object bean = context.getObjectToResolve();
 
         // 1. Grundlegende PrÃ¼fungen.
         if (bean == null || context.getLoadStrategy() != LoadStrategy.DEEP) {
@@ -100,9 +100,9 @@ public class DefaultCollectionValueDescriptor extends DefaultValueDescriptor imp
      */
     private DefaultTransformationContext createChildContextForElement(ITransformationContext parentContext, Object elementBean) {
         DefaultTransformationContext elementContext = new DefaultTransformationContext();
-        elementContext.setTargetObject(elementBean);
+        elementContext.setObjectToResolve(elementBean);
         //TODO: hier kÃ¶nnen wir mehr Infos Ã¼ber den Typ des Elements einfÃ¼gen (targetField ist ja hier List oder Array!
-        elementContext.setTargetField(parentContext.getTargetField());
+        elementContext.setFieldToResolve(parentContext.getFieldToResolve());
         elementContext.setRuntimeContext(parentContext.getRuntimeContext());
         elementContext.setLoadStrategy(parentContext.getLoadStrategy());
         return elementContext;

@@ -77,7 +77,7 @@ public class ProcessorListValueFunction extends AbstractValueFunction<Object, Li
 
     @Override
     public boolean isResponsibleForSubject(ITransformationContext transformationContext) {
-        return transformationContext != null && isResponsibleFor(transformationContext.getTargetField());
+        return transformationContext != null && isResponsibleFor(transformationContext.getFieldToResolve());
     }
 
     @Override
@@ -158,8 +158,8 @@ public class ProcessorListValueFunction extends AbstractValueFunction<Object, Li
 
         IProcessor parent = null;
         IProcessorContext ctx = getRuntimeContext();
-        if (transformationContext.getTargetObject() != null && transformationContext.getTargetObject() instanceof IProcessor) {
-            parent = (IProcessor)transformationContext.getTargetObject();
+        if (transformationContext.getObjectToResolve() != null && transformationContext.getObjectToResolve() instanceof IProcessor) {
+            parent = (IProcessor)transformationContext.getObjectToResolve();
             ctx = parent.getRuntimeContext();
         }
 

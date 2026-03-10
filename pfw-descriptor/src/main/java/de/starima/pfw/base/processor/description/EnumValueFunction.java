@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 public class EnumValueFunction extends AbstractValueFunction<Object,Enum<?>> {
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Class<?> clazz = transformationContext.getTargetType();
-        Field field = transformationContext.getTargetField();
+        Class<?> clazz = transformationContext.getRawType();
+        Field field = transformationContext.getFieldToResolve();
         Class<?> valueType = field != null ? field.getType() : clazz;
         return valueType != null && valueType.isEnum();
     }
@@ -113,8 +113,8 @@ public class EnumValueFunction extends AbstractValueFunction<Object,Enum<?>> {
 
         Class<?> enumType = getEnumClass();
 
-        if (transformationContext != null && transformationContext.getTargetField() != null) {
-            enumType = transformationContext.getTargetField().getType();
+        if (transformationContext != null && transformationContext.getFieldToResolve() != null) {
+            enumType = transformationContext.getFieldToResolve().getType();
         }
 
         if (enumType == null) {
@@ -123,7 +123,7 @@ public class EnumValueFunction extends AbstractValueFunction<Object,Enum<?>> {
         }
 
         if (!enumType.isEnum()) {
-            log.error("Feld '{}' ist kein Enum-Typ, kann aber von EnumValueFunction verarbeitet werden.", transformationContext.getTargetField() != null ? transformationContext.getTargetField().getName() : "");
+            log.error("Feld '{}' ist kein Enum-Typ, kann aber von EnumValueFunction verarbeitet werden.", transformationContext.getFieldToResolve() != null ? transformationContext.getFieldToResolve().getName() : "");
             return null;
         }
 

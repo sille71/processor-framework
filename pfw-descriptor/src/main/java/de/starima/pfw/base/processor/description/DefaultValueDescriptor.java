@@ -6,6 +6,7 @@ import de.starima.pfw.base.processor.context.api.ITransformationContext;
 import de.starima.pfw.base.processor.description.api.IDescriptorProcessor;
 import de.starima.pfw.base.processor.description.api.IValueDescriptor;
 import de.starima.pfw.base.processor.description.api.IValueFunction;
+import de.starima.pfw.base.processor.description.config.api.ITypeRef;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +31,9 @@ public class DefaultValueDescriptor extends DescriptorProcessor implements IValu
 
     @ProcessorParameter(description = "Die ValueFunction, die fÃ¼r die Transformation und AuflÃ¶sung der Referenz zustÃ¤ndig ist.")
     private IValueFunction<ITransformationContext, Object, Object> valueFunction;
+
+    @ProcessorParameter(description = "Der TypeRef als primäre Typ-Quelle (hat Vorrang vor der ValueFunction für Typ-Klassifikatoren).", ignoreInitialization = true)
+    private ITypeRef typeRef;
 
     @ProcessorParameter(description = "Dies ist der Hauptfilter. Wenn ein IValueDescriptor hier z.B. ['database/connector'] stehen hat, bedeutet das, dass nur Prozessoren oder ValueObjects, die ebenfalls in dieser Kategorie sind, als mÃ¶glicher Wert in der UI zur Auswahl angeboten werden.")
     private String[] requiredCategories;

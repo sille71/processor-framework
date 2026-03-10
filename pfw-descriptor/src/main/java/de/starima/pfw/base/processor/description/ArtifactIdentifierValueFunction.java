@@ -22,8 +22,8 @@ import java.lang.reflect.Field;
 public class ArtifactIdentifierValueFunction extends AbstractValueFunction<Object, ArtifactIdentifier> implements IValueFunction<ITransformationContext, Object, ArtifactIdentifier> {
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Class<?> clazz = transformationContext.getTargetType();
-        Field field = transformationContext.getTargetField();
+        Class<?> clazz = transformationContext.getRawType();
+        Field field = transformationContext.getFieldToResolve();
         Class<?> valueType = field != null ? field.getType() : clazz;
         return valueType != null && ArtifactIdentifier.class.isAssignableFrom(valueType);
     }

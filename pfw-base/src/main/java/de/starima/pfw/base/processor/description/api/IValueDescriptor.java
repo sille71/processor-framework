@@ -1,6 +1,7 @@
 package de.starima.pfw.base.processor.description.api;
 
 import de.starima.pfw.base.processor.context.api.ITransformationContext;
+import de.starima.pfw.base.processor.description.config.api.ITypeRef;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,15 @@ public interface IValueDescriptor extends IDescriptorProcessor {
     IValueFunction<ITransformationContext, Object, Object> getValueFunction();
     void setValueFunction(IValueFunction<ITransformationContext, Object, Object> function);
 
+    /**
+     * Der TypeRef als primäre Typ-Quelle.
+     *
+     * <p>Wenn gesetzt, wird der TypeRef für alle Typ-Klassifikatoren bevorzugt.
+     * Falls nicht gesetzt, werden die Klassifikatoren von der ValueFunction delegiert.
+     */
+    ITypeRef getTypeRef();
+    void setTypeRef(ITypeRef typeRef);
+
     String[] getRequiredCategories();
     void setRequiredCategories(String[] requiredCategories);
     String[] getRequiredSubCategories();
@@ -38,16 +48,18 @@ public interface IValueDescriptor extends IDescriptorProcessor {
     void setRequiredTags(String[] requiredTags);
 
     /**
-     * Liefert die Typsignatur, indem es die assoziierte ValueFunction fragt.
+     * Liefert die Typsignatur — TypeRef hat Vorrang, dann ValueFunction.
      */
     default String getTypeSignature() {
+        if (getTypeRef() != null) return getTypeRef().getTypeSignature();
         return getValueFunction() != null ? getValueFunction().getTypeSignature() : "unknown";
     }
 
     /**
-     * PrÃ¼ft, ob der Wert generisch ist, indem es die assoziierte ValueFunction fragt.
+     * Prüft, ob der Wert generisch ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isGeneric() {
+        if (getTypeRef() != null) return getTypeRef().isPolymorphic();
         return getValueFunction() != null && getValueFunction().isGeneric();
     }
 
@@ -59,62 +71,66 @@ public interface IValueDescriptor extends IDescriptorProcessor {
     }
 
     /**
-     * PrÃ¼ft, ob der Wert ein IProcessor ist, indem es die assoziierte ValueFunction fragt.
+     * Prüft, ob der Wert ein IProcessor ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isProcessor() {
+        if (getTypeRef() != null) return getTypeRef().isProcessor();
         return getValueFunction() != null && getValueFunction().isProcessor();
     }
 
     /**
-     * PrÃ¼ft, ob der Wert ein ValueObject ist, indem es die assoziierte ValueFunction fragt.
+     * Prüft, ob der Wert ein ValueObject ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isValueObject() {
+        if (getTypeRef() != null) return getTypeRef().isValueObject();
         return getValueFunction() != null && getValueFunction().isValueObject();
     }
 
     /**
-     * Gibt an, ob der Wert ein numerischer Typ ist (z.B. integer, long, double).
-     * Die Default-Implementierung nutzt die typeSignature.
-     * @return true, wenn der Wert ein numerischer Typ ist.
+     * Gibt an, ob der Wert ein numerischer Typ ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isNumeric() {
+        if (getTypeRef() != null) return getTypeRef().isNumeric();
         return getValueFunction() != null && getValueFunction().isNumeric();
     }
 
     /**
-     * Gibt an, ob der Wert ein Boolean ist.
-     * @return true, wenn der Wert ein boolean oder Boolean ist.
+     * Gibt an, ob der Wert ein Boolean ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isBoolean() {
+        if (getTypeRef() != null) return getTypeRef().isBoolean();
         return getValueFunction() != null && getValueFunction().isBoolean();
     }
 
     /**
-     * Gibt an, ob der Wert ein Datumstyp ist.
+     * Gibt an, ob der Wert ein Datumstyp ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isDate() {
+        if (getTypeRef() != null) return getTypeRef().isDate();
         return getValueFunction() != null && getValueFunction().isDate();
     }
 
     /**
-     * Gibt an, ob der Wert ein Zeittyp ist.
+     * Gibt an, ob der Wert ein Zeittyp ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isTime() {
+        if (getTypeRef() != null) return getTypeRef().isTime();
         return getValueFunction() != null && getValueFunction().isTime();
     }
 
     /**
-     * Gibt an, ob der Wert ein String ist.
+     * Gibt an, ob der Wert ein String ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isString() {
+        if (getTypeRef() != null) return getTypeRef().isString();
         return getValueFunction() != null && getValueFunction().isString();
     }
 
     /**
-     * Gibt an, ob der Wert ein Enum ist.
-     * (Annahme: Wir definieren eine 'enum' typeSignature)
+     * Gibt an, ob der Wert ein Enum ist — TypeRef hat Vorrang, dann ValueFunction.
      */
     default boolean isEnum() {
+        if (getTypeRef() != null) return getTypeRef().isEnum();
         return getValueFunction() != null && getValueFunction().isEnum();
     }
 

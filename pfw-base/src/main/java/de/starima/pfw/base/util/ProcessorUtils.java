@@ -585,7 +585,7 @@ public class ProcessorUtils {
         //ValueObject und Processor unterscheiden sich momentan noch nicht in den Parametern. Das wird sich Ã¤ndern, wenn der MethodDescriptor eingefÃ¼hrt wird.
         Class<?> clazz = context.getSourceType();
         IProcessorContext ctx = context.getRuntimeContext();
-        ProcessorParameter processorParameter = context.getProcessorParameterAnnotation();
+        ProcessorParameter processorParameter = context.getProcessorParameter();
 
         if (clazz == null || !(isConsideredValueObject(clazz))) {
             log.error("{} no ValueObject Annotation present!", clazz.getName());
@@ -656,7 +656,7 @@ public class ProcessorUtils {
             for (Map.Entry<Field, ProcessorParameter> param : getAllAnnotatedParameterFields(clazz).entrySet()) {
                 DefaultDescriptorConstructorContext paramContext = DefaultDescriptorConstructorContext.clone(context);
                 paramContext.setSourceField(param.getKey());
-                paramContext.setProcessorParameterAnnotation(param.getValue());
+                paramContext.setProcessorParameter(param.getValue());
                 parameterDescriptorIdentifiers.add(generateParameterBlueprint(paramContext, blueprint));
             }
             // die ParameterIdentifiers werden im ProcessorDescriptor referenziert
@@ -697,7 +697,7 @@ public class ProcessorUtils {
     public static String generateProcessorDescriptorBlueprint(IDescriptorConstructorContext context, Map<String, Map<String, Object>> blueprint) {
         Class<?> clazz = context.getSourceType();
         IProcessorContext ctx = context.getRuntimeContext();
-        ProcessorParameter processorParameter = context.getProcessorParameterAnnotation();
+        ProcessorParameter processorParameter = context.getProcessorParameter();
 
         if (clazz == null || !(isConsideredProcessor(clazz))) {
             log.error("{} no Processor Annotation present!", clazz.getName());
@@ -770,7 +770,7 @@ public class ProcessorUtils {
                 DefaultDescriptorConstructorContext paramContext = DefaultDescriptorConstructorContext.clone(context);
                 paramContext.setSourceField(param.getKey());
                 paramContext.setRuntimeContext(ctx);
-                paramContext.setProcessorParameterAnnotation(param.getValue());
+                paramContext.setProcessorParameter(param.getValue());
                 parameterDescriptorIdentifiers.add(generateParameterBlueprint(paramContext, blueprint));
             }
             // die ParameterIdentifiers werden im ProcessorDescriptor referenziert
@@ -805,11 +805,11 @@ public class ProcessorUtils {
     public static String generateParameterBlueprint(IDescriptorConstructorContext context, Map<String, Map<String, Object>> blueprint) {
         Class<?> clazz = context.getSourceType();
         IProcessorContext ctx = context.getRuntimeContext();
-        if (context.getProcessorParameterAnnotation() == null && context.getSourceField() != null) {
+        if (context.getProcessorParameter() == null && context.getSourceField() != null) {
             log.error("can not create parameterBlueprint - no ProcessorParameter Annotation present in context {}!", context);
             return null;
         }
-        ProcessorParameter processorParameter = context.getProcessorParameterAnnotation();
+        ProcessorParameter processorParameter = context.getProcessorParameter();
         Field field = context.getSourceField();
 
         HashMap<String,Object> parameterDescriptorParameters = new HashMap<>();
@@ -966,7 +966,7 @@ public class ProcessorUtils {
             // Wichtig: Das Feld wird auf null gesetzt, da der Element-Typ selbst kein Feld ist.
             elementContext.setSourceField(null);
             elementContext.setSourceType(elementType);
-            elementContext.setProcessorParameterAnnotation(null);
+            elementContext.setProcessorParameter(null);
 
             valueDescriptorParameters.put("elementValueDescriptor", generateValueDescriptorBlueprint(elementContext, blueprint));
         }
@@ -990,10 +990,10 @@ public class ProcessorUtils {
 
         DefaultTransformationContext transformationContext = new DefaultTransformationContext();
         transformationContext.setRuntimeContext(context.getRuntimeContext());
-        transformationContext.setTargetField(context.getSourceField());
-        transformationContext.setTargetType(context.getSourceType());
-        transformationContext.setTargetObject(context.getSourceObject());
-        transformationContext.setProcessorParameterAnnotation(context.getProcessorParameterAnnotation());
+        transformationContext.setFieldToResolve(context.getSourceField());
+        transformationContext.setTypeToResolve(context.getSourceType());
+        transformationContext.setObjectToResolve(context.getSourceObject());
+        transformationContext.setProcessorParameter(context.getProcessorParameter());
 
         //TODO: zukÃ¼nftig kÃ¶nnte auch ein potentiell vorhandenes sourceObject zur Erzeugung der richtigen valueFunction herangezogen werden. Siehe Kommentar in createValueFunctionForContext()
         IValueFunction<ITransformationContext, ?, ?> valueFunctionInstance = createValueFunctionForContext(transformationContext);
@@ -1151,7 +1151,7 @@ public class ProcessorUtils {
     }
 
     public static String createTypeIdentifier(ITransformationContext context) {
-        Class<?> clazz = context.getTargetType();
+        Class<?> clazz = context.getRawType();
         if (clazz == null) {
             return null;
         }
@@ -1183,7 +1183,7 @@ public class ProcessorUtils {
      *         }
      *
      *         // ...sondern auch den Inhalt, wenn eine Instanz da ist!
-     *         Object sourceObject = context.getTargetObject();
+     *         Object sourceObject = context.getObjectToResolve();
      *         if (sourceObject instanceof String) {
      *             String value = (String) sourceObject;
      *             // Ich bin nur verantwortlich, wenn der String wie eine URL aussieht.
@@ -1197,7 +1197,7 @@ public class ProcessorUtils {
      *     @Override
      *     public boolean isResponsibleForSubject(ITransformationContext context) {
      *         // ...
-     *         Object sourceObject = context.getTargetObject();
+     *         Object sourceObject = context.getObjectToResolve();
      *         if (sourceObject instanceof String) {
      *             // Ich bin verantwortlich, wenn der String nur aus Zahlen besteht.
      *             return ((String) sourceObject).matches("\\d+");
@@ -1210,7 +1210,7 @@ public class ProcessorUtils {
      */
     public static IValueFunction<ITransformationContext, ?, ?> createValueFunctionForContext(ITransformationContext context) {
         // Zuerst versuchen, die ValueFunction Ã¼ber die Annotationen direkt zu finden
-        ProcessorParameter processorParameter = context.getProcessorParameterAnnotation();
+        ProcessorParameter processorParameter = context.getProcessorParameter();
         if (processorParameter != null) {
             String valueFunctionFullBeanId = createFullBeanId(processorParameter.valueFunctionPrototypeIdentifier(), processorParameter.valueFunctionIdentifier(), null);
             if (StringUtils.hasLength(valueFunctionFullBeanId)) {
@@ -1257,10 +1257,10 @@ public class ProcessorUtils {
         // 2. Spezialbehandlung fÃ¼r kompositionale Funktionen (rekursive)
         if (function instanceof AbstractCollectionValueFunction) {
             // Erzeuge einen neuen Kind-Kontext fÃ¼r das Listenelement
-            Class<?> elementType = context.getTargetField() != null ? getElementType(context.getTargetField().getGenericType()) : null;
+            Class<?> elementType = context.getFieldToResolve() != null ? getElementType(context.getFieldToResolve().getGenericType()) : null;
             if (elementType != null) {
                 DefaultTransformationContext elementContext = new DefaultTransformationContext();
-                elementContext.setTargetType(elementType);
+                elementContext.setTypeToResolve(elementType);
                 elementContext.setRuntimeContext(context.getRuntimeContext());
 
                 // Rekursiver Aufruf, um die Kind-Funktion zu erzeugen!
@@ -1542,8 +1542,8 @@ public class ProcessorUtils {
         try {
             field.setAccessible(true);
             DefaultTransformationContext transformationContext = new DefaultTransformationContext();
-            transformationContext.setTargetObject(bean);
-            transformationContext.setTargetField(field);
+            transformationContext.setObjectToResolve(bean);
+            transformationContext.setFieldToResolve(field);
             transformationContext.setRuntimeContext(ctx);
 
             // Finde die zustÃ¤ndige Funktion
@@ -1702,7 +1702,7 @@ public class ProcessorUtils {
      */
     public static Map<String, Map<String, Object>> extractEffectiveParameterMap(ITransformationContext context) {
         Map<String, Map<String, Object>> beanParameterMap = new HashMap<>();
-        if (context == null || context.getTargetObject() == null) {
+        if (context == null || context.getObjectToResolve() == null) {
             log.warn("extractEffectiveParameterMap aufgerufen mit leerem Kontext oder Zielobjekt.");
             return beanParameterMap;
         }
@@ -1719,7 +1719,7 @@ public class ProcessorUtils {
      */
     public static Map<String, Object> extractEffectiveParameters(ITransformationContext context) {
         Map<String, Map<String, Object>> temporaryBeanMap = new HashMap<>();
-        if (context == null || context.getTargetObject() == null) {
+        if (context == null || context.getObjectToResolve() == null) {
             log.warn("extractEffectiveParameters aufgerufen mit leerem Kontext oder Zielobjekt.");
             return new HashMap<>();
         }
@@ -1738,7 +1738,7 @@ public class ProcessorUtils {
      * Dies ist die atomare Operation, die von den anderen Methoden wiederverwendet wird.
      */
     public static Object getParameterObject(ITransformationContext context) {
-        if (context == null || context.getTargetObject() == null) {
+        if (context == null || context.getObjectToResolve() == null) {
             return null;
         }
         // Wir nutzen eine private Helper-Methode, die auch die Rekursion verwendet.
@@ -1750,7 +1750,7 @@ public class ProcessorUtils {
      * Sie findet die ValueFunction und wendet sie an. Kein Seiteneffekt, keine Rekursion.
      */
     private static Object getRawValueForContext(ITransformationContext context) {
-        Object sourceObject = context.getTargetObject();
+        Object sourceObject = context.getObjectToResolve();
         if (sourceObject == null) {
             return null;
         }
@@ -1778,7 +1778,7 @@ public class ProcessorUtils {
      * @return Der "rohe" Wert (typischerweise der Identifier) des Objekts im Kontext, der vom Eltern-Objekt verwendet wird.
      */
     private static Object extractParametersRecursively(ITransformationContext context, Map<String, Map<String, Object>> beanParameterMap, Set<Object> visited, LoadStrategy mode) {
-        Object sourceObject = context.getTargetObject();
+        Object sourceObject = context.getObjectToResolve();
         if (sourceObject == null) {
             return null;
         }
@@ -1826,11 +1826,11 @@ public class ProcessorUtils {
 
                 // 6. Erzeuge einen NEUEN, KORREKTEN Kontext fÃ¼r das Kind-Objekt.
                 DefaultTransformationContext childContext = new DefaultTransformationContext();
-                childContext.setTargetObject(childObject); // Das Kind ist das neue Zielobjekt.
-                childContext.setTargetField(field);        // Das Feld, in dem das Kind lebt.
-                childContext.setTargetType(field.getType()); // Der Typ des Feldes.
+                childContext.setObjectToResolve(childObject); // Das Kind ist das neue Zielobjekt.
+                childContext.setFieldToResolve(field);        // Das Feld, in dem das Kind lebt.
+                childContext.setTypeToResolve(field.getType()); // Der Typ des Feldes.
                 childContext.setRuntimeContext(context.getRuntimeContext()); // Der RuntimeContext bleibt gleich.
-                childContext.setProcessorParameterAnnotation(p); // Die Annotation des Feldes.
+                childContext.setProcessorParameter(p); // Die Annotation des Feldes.
 
                 // 7. Rekursiver Aufruf mit dem neuen, prÃ¤zisen Kind-Kontext.
                 Object childRawValue;

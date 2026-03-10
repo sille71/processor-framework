@@ -48,7 +48,7 @@ public class ValueObjectListValueFunction extends AbstractValueFunction<Object, 
 
     @Override
     public boolean isResponsibleForSubject(ITransformationContext transformationContext) {
-        return transformationContext != null && isResponsibleFor(transformationContext.getTargetField());
+        return transformationContext != null && isResponsibleFor(transformationContext.getFieldToResolve());
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ValueObjectListValueFunction extends AbstractValueFunction<Object, 
 
         if (input instanceof Collection) {
             List<Object> result = new ArrayList<>();
-            Class<?> genericType = ProcessorUtils.getGenericType(transformationContext.getTargetField());
+            Class<?> genericType = ProcessorUtils.getGenericType(transformationContext.getFieldToResolve());
             for (Object item : (Collection<?>) input) {
                 try {
                     result.add(beanProvider.getBeanForId(genericType, item.toString()));

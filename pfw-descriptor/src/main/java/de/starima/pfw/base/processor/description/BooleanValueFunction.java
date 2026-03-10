@@ -17,8 +17,8 @@ import java.lang.reflect.Field;
 public class BooleanValueFunction extends AbstractValueFunction<Object, Boolean> {
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Class<?> clazz = transformationContext.getTargetType();
-        Field field = transformationContext.getTargetField();
+        Class<?> clazz = transformationContext.getRawType();
+        Field field = transformationContext.getFieldToResolve();
         Class<?> valueType = field != null ? field.getType() : clazz;
         return valueType != null && (boolean.class.isAssignableFrom(valueType) || Boolean.class.isAssignableFrom(valueType));
     }

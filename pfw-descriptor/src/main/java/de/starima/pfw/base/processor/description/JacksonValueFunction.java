@@ -20,8 +20,8 @@ import java.lang.reflect.Field;
 public class JacksonValueFunction extends AbstractValueFunction<Object,Object> {
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Field field = transformationContext.getTargetField();
-        ProcessorParameter p = transformationContext.getProcessorParameterAnnotation();
+        Field field = transformationContext.getFieldToResolve();
+        ProcessorParameter p = transformationContext.getProcessorParameter();
         if (p == null && field != null) p = field.getAnnotation(ProcessorParameter.class);
         if (p == null) return false;
         return StringUtils.hasLength(p.valueFunctionPrototypeIdentifier()) && p.valueFunctionPrototypeIdentifier().equalsIgnoreCase(ProcessorUtils.getPrototypeIdentifierFromClass(JacksonValueFunction.class));
@@ -57,7 +57,7 @@ public class JacksonValueFunction extends AbstractValueFunction<Object,Object> {
     @Override
     public Object transformValue(ITransformationContext transformationContext, Object input) {
         if (!isResponsibleForSubject(transformationContext)) {
-            log.warn("{}.transformValue: Can not transform value {}! Processor is not responsible for subject {}.", this.getIdentifier(), input, transformationContext.getTargetField());
+            log.warn("{}.transformValue: Can not transform value {}! Processor is not responsible for subject {}.", this.getIdentifier(), input, transformationContext.getFieldToResolve());
             return null;
         }
         if (!isResponsibleForInput(input)) {
@@ -71,7 +71,7 @@ public class JacksonValueFunction extends AbstractValueFunction<Object,Object> {
             jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(input);
             log.trace("transform value {}", jsonString);
 
-            return objectMapper.readValue(jsonString, transformationContext.getTargetField().getType());
+            return objectMapper.readValue(jsonString, transformationContext.getFieldToResolve().getType());
         } catch (Exception e) {
             log.trace("Can not transform value {}", input, e);
         }

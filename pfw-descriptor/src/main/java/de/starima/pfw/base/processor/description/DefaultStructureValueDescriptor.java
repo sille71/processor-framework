@@ -191,7 +191,7 @@ public class DefaultStructureValueDescriptor<T extends IStructureValueDescriptor
     }
 
     public void extractEffectiveParameterMap(ITransformationContext context, Map<String, Map<String, Object>> beanParameterMap, Set<Object> visited) {
-        Object bean = context.getTargetObject();
+        Object bean = context.getObjectToResolve();
         if (bean == null || !visited.add(bean)) {
             return; // Null-Wert oder Zyklus erkannt
         }

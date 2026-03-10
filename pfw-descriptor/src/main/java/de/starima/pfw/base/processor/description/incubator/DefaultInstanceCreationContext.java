@@ -1,8 +1,12 @@
 package de.starima.pfw.base.processor.description.incubator;
 
 import de.starima.pfw.base.annotation.ProcessorParameter;
+import de.starima.pfw.base.processor.context.api.LoadStrategy;
 import de.starima.pfw.base.processor.context.domain.DefaultTaskContext;
+import de.starima.pfw.base.processor.description.api.IDescriptorProcessor;
 import de.starima.pfw.base.processor.description.api.IProcessorDescriptor;
+import de.starima.pfw.base.processor.description.api.IValueDescriptor;
+import de.starima.pfw.base.processor.description.api.IValueFunction;
 import de.starima.pfw.base.processor.description.config.api.IDescriptorConfigProvider;
 import de.starima.pfw.base.processor.description.incubator.api.IInstanceCreationContext;
 import de.starima.pfw.base.processor.description.incubator.api.IInstanceProvider;
@@ -10,7 +14,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -19,7 +22,11 @@ import java.util.*;
 /**
  * Standard-Implementierung von {@link IInstanceCreationContext}.
  *
- * <p>Unterstützt sowohl Hydration (provide) als auch Dehydration (extract)
+ * <p>Implementiert sowohl {@link IInstanceCreationContext} als auch (transitiv)
+ * {@link de.starima.pfw.base.processor.context.api.ITransformationContext} —
+ * ein einziges Objekt für beide Sichten.
+ *
+ * <p>Unterstützt Hydration (provide) und Dehydration (extract)
  * durch separate Felder für beide Richtungen.
  *
  * <p>Der Konstruktor mit Parent-Context übernimmt:
@@ -32,29 +39,37 @@ import java.util.*;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class DefaultInstanceCreationContext extends DefaultTaskContext implements IInstanceCreationContext {
 
-    // --- Bestehende Felder ---
+    // === Vereinheitlichte Kern-Felder (ITransformationContext + IInstanceCreationContext) ===
     private Type typeToResolve;
     private Object objectToResolve;
     private Field fieldToResolve;
     private ProcessorParameter processorParameter;
+
+    // === ITransformationContext-Felder ===
+    private LoadStrategy loadStrategy = LoadStrategy.DEEP;
+    private IDescriptorProcessor parentDescriptor;
+    private IValueDescriptor valueDescriptor;
+    @SuppressWarnings("rawtypes")
+    private IValueFunction valueFunction;
+
+    // === IInstanceCreationContext-spezifische Felder ===
     private IInstanceProvider rootProvider;
     private IDescriptorConfigProvider descriptorConfigRootProvider;
 
-    // --- NEU: Für provide() ---
+    // Für provide()
     private Object parameterValue;
     private Set<String> creationStack;
 
-    // --- NEU: Für extract() ---
+    // Für extract()
     private Set<Object> visitedSet;
     private Map<String, Map<String, Object>> extractionResult;
 
     /**
-     * Leerer Konstruktor für Builder-Pattern oder manuelles Setup.
+     * Leerer Konstruktor für manuelles Setup.
      */
     public DefaultInstanceCreationContext() {
         // creationStack und visitedSet werden lazy initialisiert

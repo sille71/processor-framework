@@ -96,7 +96,7 @@ public class ScalarInstanceProvider extends AbstractProcessor implements IInstan
 
         // TransformationContext aufbauen
         ITransformationContext txCtx = buildTransformationContext(context);
-        txCtx.setTargetObject(value);
+        txCtx.setObjectToResolve(value);
 
         // ValueFunction finden
         IValueFunction<ITransformationContext, ?, ?> valueFunction =
@@ -124,15 +124,15 @@ public class ScalarInstanceProvider extends AbstractProcessor implements IInstan
      */
     private DefaultTransformationContext buildTransformationContext(IInstanceCreationContext context) {
         DefaultTransformationContext txCtx = new DefaultTransformationContext();
-        txCtx.setTargetField(context.getFieldToResolve());
+        txCtx.setFieldToResolve(context.getFieldToResolve());
         txCtx.setRuntimeContext(context.getRuntimeContext());
-        txCtx.setProcessorParameterAnnotation(context.getProcessorParameter());
+        txCtx.setProcessorParameter(context.getProcessorParameter());
 
         if (context.getTypeToResolve() instanceof Class<?> clazz) {
-            txCtx.setTargetType(clazz);
+            txCtx.setTypeToResolve(clazz);
         }
         if (context.getObjectToResolve() != null) {
-            txCtx.setTargetObject(context.getObjectToResolve());
+            txCtx.setObjectToResolve(context.getObjectToResolve());
         }
         return txCtx;
     }

@@ -77,8 +77,8 @@ public abstract class AbstractCollectionValueFunction<I, O> extends AbstractValu
         // 3. Kontext fÃ¼r Elemente erstellen
         DefaultTransformationContext elementContext = new DefaultTransformationContext();
         elementContext.setRuntimeContext(transformationContext.getRuntimeContext());
-        if (transformationContext.getTargetField() != null) {
-            elementContext.setTargetType(ProcessorUtils.getElementType(transformationContext.getTargetField().getGenericType()));
+        if (transformationContext.getFieldToResolve() != null) {
+            elementContext.setTypeToResolve(ProcessorUtils.getElementType(transformationContext.getFieldToResolve().getGenericType()));
         }
 
         // 4. Stream transformieren und in Ziel-Collection konvertieren
@@ -176,7 +176,7 @@ public abstract class AbstractCollectionValueFunction<I, O> extends AbstractValu
 
         DefaultTransformationContext elementContext = new DefaultTransformationContext();
         elementContext.setRuntimeContext(transformationContext.getRuntimeContext());
-        elementContext.setTargetType(elementType);
+        elementContext.setTypeToResolve(elementType);
 
         return new CollectionFunctionContext(elementFunction, elementContext);
     }
@@ -185,11 +185,11 @@ public abstract class AbstractCollectionValueFunction<I, O> extends AbstractValu
      * Hilfsmethode, um den generischen Typ (z.B. T in List<T>) aus dem Feld zu extrahieren.
      */
     private Class<?> getGenericCollectionType(ITransformationContext context) {
-        if (context == null || context.getTargetField() == null) {
+        if (context == null || context.getFieldToResolve() == null) {
             return Object.class; // Fallback
         }
 
-        java.lang.reflect.Type genericType = context.getTargetField().getGenericType();
+        java.lang.reflect.Type genericType = context.getFieldToResolve().getGenericType();
         if (genericType instanceof java.lang.reflect.ParameterizedType) {
             java.lang.reflect.ParameterizedType parameterizedType = (java.lang.reflect.ParameterizedType) genericType;
             java.lang.reflect.Type[] typeArguments = parameterizedType.getActualTypeArguments();

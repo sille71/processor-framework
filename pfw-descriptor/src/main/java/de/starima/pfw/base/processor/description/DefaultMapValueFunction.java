@@ -41,8 +41,8 @@ public class DefaultMapValueFunction extends AbstractValueFunction<Object, Map<S
 
     public static boolean isResponsibleFor(ITransformationContext transformationContext) {
         if (transformationContext == null) return false;
-        Class<?> clazz = transformationContext.getTargetType();
-        Field field = transformationContext.getTargetField();
+        Class<?> clazz = transformationContext.getRawType();
+        Field field = transformationContext.getFieldToResolve();
         Class<?> valueType = field != null ? field.getType() : clazz;
         if (valueType == null || !Map.class.isAssignableFrom(valueType)) return false;
 
