@@ -1,4 +1,5 @@
 package de.starima.pfw.base.processor.description.incubator.domain;
 
 public interface IDescribeSource {
+    Object getObject();
 }
