@@ -49,6 +49,25 @@
             <artifactId>jaxb-runtime</artifactId>
         </dependency>
 
+        <!-- Markdown Parsing -->
+        <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-all</artifactId>
+        </dependency>
+
+        <!-- HTML zu PDF -->
+        <dependency>
+            <groupId>com.openhtmltopdf</groupId>
+            <artifactId>openhtmltopdf-pdfbox</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>3.2.1</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- Optional: Groovy fuer Expression-basierte VariableProcessor -->
         <dependency>
             <groupId>org.apache.groovy</groupId>
