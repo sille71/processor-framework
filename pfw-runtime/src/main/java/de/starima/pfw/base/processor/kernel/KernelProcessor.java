@@ -187,14 +187,11 @@ public class KernelProcessor implements IProcessor, IIncubator, BeanNameAware {
 
 
     private IIncubator constructFrameworkIncubator() {
-        try {
-            ConstructSource cSource = new ConstructSource();
-            cSource.setRuntimeContext(this.reconContext);
-            cSource.setSourceField(this.getClass().getDeclaredField("frameworkIncubator"));
-            return this.construct(IIncubator.class, cSource, null);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        DefaultConstructTaskContext ctx = new DefaultConstructTaskContext();
+        ctx.setRuntimeContext(this.reconContext);
+        ctx.setRootBeanId("frameworkIncubator");
+        ctx.setTargetType(IIncubator.class);
+        return (IIncubator) this.construct(ctx);
     }
 
     @Override
@@ -376,27 +373,17 @@ public class KernelProcessor implements IProcessor, IIncubator, BeanNameAware {
     //Start Incubator Interface Implementierung
 
     @Override
-    public IDescribeSession startDescribe(IDescribeSource source, IDescribePolicy policy) {
+    public IDescribeSession startDescribe(IDescribeTaskContext context) {
         return null;
     }
 
     @Override
-    public IConstructSession<Object> startConstruct(IConstructSource source, IConstructPolicy policy) {
+    public <T> IConstructSession<T> startConstruct(IConstructTaskContext context) {
         return null;
     }
 
     @Override
-    public <T> IConstructSession<T> startConstruct(Class<T> clazz, IConstructSource source, IConstructPolicy policy) {
-        //session erzeugen
-
-        //BuildTask erzeugen
-
-        //constructionManage erzeugen
-        return null;
-    }
-
-    @Override
-    public IEditSession startEdit(IEditSource source, IEditPolicy policy) {
+    public IEditSession startEdit(IEditTaskContext context) {
         return null;
     }
 

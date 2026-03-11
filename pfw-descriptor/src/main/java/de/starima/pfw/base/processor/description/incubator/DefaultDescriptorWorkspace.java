@@ -1,6 +1,7 @@
 package de.starima.pfw.base.processor.description.incubator;
 
 import de.starima.pfw.base.annotation.Processor;
+import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.description.api.IDescriptorProcessor;
 import de.starima.pfw.base.processor.description.incubator.api.IDescriptorWorkspace;
@@ -34,10 +35,12 @@ import java.util.*;
 )
 public class DefaultDescriptorWorkspace extends AbstractProcessor implements IDescriptorWorkspace {
 
-    /** Root-Descriptor des Workspace. */
+    @ProcessorParameter(description = "Root-Descriptor des Workspace. Startknoten des partiellen Descriptor-Graphs.",
+            ignoreInitialization = true)
     private IDescriptorProcessor root;
 
-    /** InstanceProvider-Chain für exportBeanParameterMap(). */
+    @ProcessorParameter(description = "InstanceProvider-Chain für exportBeanParameterMap() (extract-Pfad).",
+            ignoreInitialization = true)
     private IInstanceProvider instanceProviderChain;
 
     /**

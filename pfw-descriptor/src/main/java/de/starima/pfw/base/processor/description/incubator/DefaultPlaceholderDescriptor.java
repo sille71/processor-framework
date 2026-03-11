@@ -1,6 +1,7 @@
 package de.starima.pfw.base.processor.description.incubator;
 
 import de.starima.pfw.base.annotation.Processor;
+import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.context.api.ITransformationContext;
 import de.starima.pfw.base.processor.description.api.IDescriptorProcessor;
@@ -40,10 +41,22 @@ import java.util.Set;
 )
 public class DefaultPlaceholderDescriptor extends AbstractProcessor implements IPlaceholderDescriptor {
 
+    @ProcessorParameter(description = "Art des Placeholders (SLOT, VALUE, CHILDREN, CANDIDATES, SUBTREE).")
     private PlaceholderKind kind;
+
+    @ProcessorParameter(description = "Pfad des Knotens im Descriptor-Graph, den dieser Placeholder repräsentiert.",
+            required = true)
     private String targetPath;
+
+    @ProcessorParameter(description = "Nächste BuildStage für die Expansion dieses Placeholders.")
     private BuildStage nextStage;
+
+    @ProcessorParameter(description = "Zusätzliche Expansion-Hinweise (z.B. selectedPrototypeId für SUBTREE-Expansion).",
+            ignoreInitialization = true)
     private Map<String, Object> expandHints = Collections.emptyMap();
+
+    @ProcessorParameter(description = "Eltern-Descriptor in der Descriptor-Hierarchie.",
+            ignoreInitialization = true)
     private IDescriptorProcessor parentDescriptor;
 
     public DefaultPlaceholderDescriptor(PlaceholderKind kind, String targetPath, BuildStage nextStage) {

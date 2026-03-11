@@ -1,6 +1,7 @@
 package de.starima.pfw.base.processor.description.incubator;
 
 import de.starima.pfw.base.annotation.Processor;
+import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.description.api.IDescriptorProcessor;
 import de.starima.pfw.base.processor.description.incubator.api.IDescriptorWorkspace;
@@ -55,7 +56,12 @@ import java.util.Optional;
 )
 public class DefaultEditSession extends AbstractProcessor implements IEditSession {
 
+    @ProcessorParameter(description = "Eindeutige Session-ID für diese Edit-Session (UUID).",
+            ignoreInitialization = true)
     private String sessionId;
+
+    @ProcessorParameter(description = "Der Workspace mit dem partiellen Descriptor-Graph dieser Edit-Session.",
+            ignoreInitialization = true)
     private IDescriptorWorkspace workspace;
 
     public DefaultEditSession(String sessionId, IDescriptorWorkspace workspace) {

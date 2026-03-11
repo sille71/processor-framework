@@ -1,6 +1,7 @@
 package de.starima.pfw.base.processor.description.incubator;
 
 import de.starima.pfw.base.annotation.Processor;
+import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.description.api.IDescriptorProcessor;
 import de.starima.pfw.base.processor.description.incubator.api.IDescribeSession;
@@ -35,7 +36,12 @@ import java.util.Map;
 )
 public class DefaultDescribeSession extends AbstractProcessor implements IDescribeSession {
 
+    @ProcessorParameter(description = "Root-Descriptor des beschriebenen Objekts (IDescriptorProcessor).",
+            ignoreInitialization = true)
     private final IDescriptorProcessor root;
+
+    @ProcessorParameter(description = "Serialisierte beanParameterMap (beanId → parameter-Map) als Ergebnis der extract-Operation.",
+            ignoreInitialization = true)
     private final Map<String, Map<String, Object>> extractionResult;
 
     public DefaultDescribeSession(IDescriptorProcessor root,
