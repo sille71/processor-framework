@@ -1,5 +1,7 @@
 package de.starima.pfw.base.processor.description.incubator.ai.domain;
 
+import de.starima.pfw.base.annotation.ProcessorParameter;
+import de.starima.pfw.base.annotation.ValueObject;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,12 +16,15 @@ import java.util.List;
  */
 @Getter
 @Builder
+@ValueObject
 public class ValidationReport {
 
     /** {@code true} wenn keine ERROR-Einträge vorhanden. */
+    @ProcessorParameter(description = "True if no ERROR-level issues were found in the validation")
     boolean valid;
 
     /** Alle gefundenen Probleme. */
+    @ProcessorParameter(description = "All validation issues found, ordered by severity")
     List<ValidationIssue> issues;
 
     /**
@@ -27,6 +32,7 @@ public class ValidationReport {
      */
     @Getter
     @Builder
+    @ValueObject
     public static class ValidationIssue {
 
         /** Schweregrad des Problems. */
@@ -39,15 +45,19 @@ public class ValidationReport {
             INFO
         }
 
+        @ProcessorParameter(description = "Severity level of this validation issue (ERROR, WARNING, or INFO)")
         Severity severity;
 
         /** Pfad des betroffenen Parameters (z.B. "reconProcessor.batchSize"). */
+        @ProcessorParameter(description = "Dot-separated path to the affected parameter (e.g. 'reconProcessor.batchSize')")
         String parameterPath;
 
         /** Fehlerbeschreibung (z.B. "Parameter 'batchSize' muss eine Zahl sein"). */
+        @ProcessorParameter(description = "Human-readable description of the validation problem")
         String message;
 
         /** Korrekturvorschlag (z.B. "Vorschlag: 1000"). */
+        @ProcessorParameter(description = "Suggested correction to resolve the issue")
         String suggestion;
     }
 }

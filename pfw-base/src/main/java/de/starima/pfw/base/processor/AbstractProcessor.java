@@ -13,7 +13,6 @@ import de.starima.pfw.base.processor.context.api.IRuntimeContextProviderProcesso
 import de.starima.pfw.base.processor.parameter.api.IParameterChangeListener;
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.annotation.ProcessorParameter;
-import de.starima.pfw.base.util.LogOutputHelper;
 import de.starima.pfw.base.util.ProcessorUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.util.Assert;
 
 @Slf4j
 @Getter @Setter @SuperBuilder
@@ -35,33 +33,16 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 
 	protected IProcessorContext runtimeContext;
 
-	//private IParameterFunctionProcessor creatorParameterFunctionProcessor;
-
-	//private IProcessor parentProcessor;
-
 	private ProcessorScope scope;
 
 	/**
-	 * Stellt die Beschreibung/Dokumentation fÃ¼r Prozessoren zur VerfÃ¼gung. Diese Beschreibung dient als Ausgangspunkt fÃ¼r:
-	 * 1. die Processor Initialisierung
-	 * 2. die Processor Dokumentation
-	 * 3. Bauplan im ReconLight
-	 * Hier handelt es sich um eine Erweiterung der Beschreibung mittels @Processor, da die konkrete Beschreibung
-	 * vom jeweiligen Einsatz abhÃ¤ngen kann.
-	 * Der Descriptor ist ebenfalls ein Parameter und erhÃ¤lt einen speziellen ParameterDescriptor, so dass er von der Parameterinitialisierung ausgeschlossen wird, da er explizit initialisiert wird!
-	 * Er sollte nach dem ContextProvider initialisiert werden, da der ContextProvider alle relevanten Parameter bereitstellt. Allerdings sollte er auch den
-	 * ContextProvider beschreiben?!
-	 * TODO: diese Beschreibung als Parameterbeschreibung hinterlegen?
+	 * Stellt die Beschreibung/Dokumentation für Prozessoren zur Verfügung.
 	 */
 	@ProcessorParameter(processorDescriptor = true, ignoreInitialization = true)
 	protected IProcessorDescriptor processorDescriptor;
 
 	/**
-	 * Die Initialisierung des ContextProviders muss immer vor der Initialisierung der anderen Parameter erfolgen. Er wird daher bereits in der initContextProvider(ctx) Methode
-	 * initialisiert und in der initParameters Methode ignoriert!
-	 * Der Parameter hier ist doppelt gemoppelt, da jeder ContextProvider wÃ¤hrend der Erzeugung des Kontextes sich an diesem Kontext registriert und somit jedem Prozessor zur VerfÃ¼gung steht.
-	 * Die Annotation und damit der Parameter sind aber dennoch wichtig, damit der ProcessorDescriptor diesen auch als Parameter ausweisen kann!
-	 * Er sollte vor dem IProcessorDescriptor initialisiert werden, da der ContextProvider alle relevanten Parameter bereitstellt.
+	 * Die Initialisierung des ContextProviders muss immer vor der Initialisierung der anderen Parameter erfolgen.
 	 */
 	@ProcessorParameter(contextProvider = true, ignoreInitialization = true)
 	protected IRuntimeContextProviderProcessor contextProviderProcessor;
@@ -92,48 +73,57 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		return getFullBeanId();
 	}
 
-	public Map<String,Map<String,Object>>  initDefaultBeanParameterMap() {
+	public Map<String,Map<String,Object>> initDefaultBeanParameterMap() {
 		return ProcessorUtils.loadProcessorDefaults(this.getClass());
 	}
 
+	// =========================================================================
+	// IProcessor Lifecycle
+	// =========================================================================
+
 	/**
-	 * Die aktuelle init Methode des AbstractReconProcessor s kommt ohne ProcessorDescriptor aus! Diese ist fÃ¼r alle Prozessoren auf den Descriptor umzustellen
-	 * auÃŸer denjenigen Prozessoren, die keine Descriptoren haben dÃ¼rfen, um Rekursionen zu vermeiden. HauptsÃ¤chlich sind dies Prozessoren,
-	 * die in Descriptoren selbst verwendet werden.
+	 * Wird vom ProcessorInstanceProvider aufgerufen, nachdem Context,
+	 * Descriptor und Parameter bereits gesetzt sind.
 	 */
-	//region IProcessor Implementation
-	//----------------------------------------------------------------------------------------------------------------------------
 	public void init(IProcessorContext ctx) throws Exception {
-		//wird vom ProcessorInstanceProvider übernommen
+		this.runtimeContext = ctx;
+		processorOnInit();
 	}
 
+	/**
+	 * Hot-Reload der Konfiguration. Aktualisiert den Kontext und
+	 * benachrichtigt den Prozessor via processorOnRefresh().
+	 */
 	public void refreshParameters(Map<String,Map<String, Object>> beanParameterMap) {
 		if (this.runtimeContext != null) {
-			log.debug("{}: refresh context with parameters {}", getIdentifier(), LogOutputHelper.toLogString(beanParameterMap));
 			this.runtimeContext.refreshBeanParameterMap(beanParameterMap);
-			IProcessorContext finalContext =  this.runtimeContext != null ? this.runtimeContext.getFinalContext() : null;
-			Assert.notNull(getUsedContextProviderProcessor(finalContext), "No context provider available!");
-			this.runtimeContext = getUsedContextProviderProcessor(finalContext).createInitialzerContext(this, this.runtimeContext);
-			initProcessorDescriptor(this.runtimeContext);
-			//an dieser Stelle sind die Parameter schon durch einen zusÃ¤tzlichen ParameterProvider angereichert.
-			//Das wÃ¤re der Fall, wenn fÃ¼r diesen Prozessor ein ContextProvider mit einem ParameterProvider konfiguriert wurde (also initContextProvider() einen neuen Kontext liefert).
-			initParameters(getParameters(this.runtimeContext));
-			this.runtimeContext = this.runtimeContext.cleanUpInitializerContext(finalContext);
-
 			this.processorOnRefresh();
-
-			if (this.getClass().isAnnotationPresent(Processor.class))
-				log.debug("refreshed context {} with parameters {}",
-						getIdentifier(), LogOutputHelper.toLogString(getParameters(this.runtimeContext)));
 		}
 	}
 
+	/** Override-Hook: Wird nach der Initialisierung aufgerufen. */
 	public void processorOnInit() {
-
 	}
 
+	/** Override-Hook: Wird nach einem Parameter-Refresh aufgerufen. */
 	public void processorOnRefresh() {
+	}
 
+	/** Override-Hook: Wird vor dem Deregistrieren/Ersetzen aufgerufen. */
+	public void processorOnDestroy() {
+	}
+
+	/**
+	 * Hook: Parameterinitialisierung aus der beanParameterMap.
+	 * Wird vom ProcessorInstanceProvider aufgerufen.
+	 * Kann in Subklassen überschrieben werden um zusätzliche Objekte zu initialisieren.
+	 */
+	protected void initParameters(Map<String, Object> parameters) {
+		if (this.processorDescriptor != null) {
+			this.processorDescriptor.initBeanParameters(this, parameters);
+		} else {
+			ProcessorUtils.initBeanParameters(this, parameters, this.getRuntimeContext());
+		}
 	}
 
 	@Override
@@ -142,32 +132,9 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		this.protoTypeIdentifier = name;
 	}
 
-	/**
-	 * Erzeugung des Prozessordescriptors - Ablauf der initProcessorDescriptor Methode
-	 */
-	protected void initProcessorDescriptor(IProcessorContext ctx) {
-		log.info("{}: init processor descriptor ", getFullBeanId());
-
-		Map<String, Object> ctxParameters = getParameters(ctx);
-
-		if (ctxParameters != null) {
-			Object processorDescriptorParam = ctxParameters.get("processorDescriptor") != null ? ctxParameters.get("processorDescriptor") : ctxParameters.get("processorDescriptorIdentifier");
-			if (processorDescriptorParam != null) {
-				if (ctx.getProcessorProvider().isProcessorCreationPossible(processorDescriptorParam.toString(), ctx, this)) {
-					log.info("{}: try to init processor descriptor from parameter {}", getFullBeanId(), processorDescriptorParam);
-					this.processorDescriptor = ctx.getProcessorProvider().getProcessorForBeanId(IProcessorDescriptor.class, processorDescriptorParam.toString(), ctx, this);
-					if (this.processorDescriptor != null)
-						this.processorDescriptor.setPrototypeValueDescriptor(this.generatePrototypeProcessorDescriptor());
-				}
-			}
-		}
-	}
-
-
-	protected Map<String, Object> getParameters(IProcessorContext ctx) {
-		if (ctx == null) return null;
-		return ctx.getContextMergedBeanParameters(getIdentifier());
-	}
+	// =========================================================================
+	// Descriptor Generation
+	// =========================================================================
 
 	/**
 	 * Factory method — override in pfw-runtime module to return a concrete IDescriptorConstructorContext instance.
@@ -191,7 +158,7 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		context.setRuntimeContext(getRuntimeContext());
 		context.setParentProcessor(Optional.of(this));
 		Map<String, Map<String, Object>> bluePrint = new HashMap<>();
-		String fullBeanId = ProcessorUtils.generateDescriptorBlueprint(context,bluePrint);
+		String fullBeanId = ProcessorUtils.generateDescriptorBlueprint(context, bluePrint);
 		return this.createProcessor(IProcessorDescriptor.class, fullBeanId, null, Collections.singletonList(bluePrint));
 	}
 
@@ -203,24 +170,17 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		context.setSourceObject(this);
 		context.setRuntimeContext(getRuntimeContext());
 		context.setParentProcessor(Optional.of(this));
-		Map<String, Map<String, Object>> intanceMap = new HashMap<>();
-		String fullBeanId = ProcessorUtils.generateDescriptorInstance(context,intanceMap);
-		return this.createProcessor(IProcessorDescriptor.class, fullBeanId, null, Collections.singletonList(intanceMap));
+		Map<String, Map<String, Object>> instanceMap = new HashMap<>();
+		String fullBeanId = ProcessorUtils.generateDescriptorInstance(context, instanceMap);
+		return this.createProcessor(IProcessorDescriptor.class, fullBeanId, null, Collections.singletonList(instanceMap));
 	}
 
-	protected void initParameters(Map<String, Object> parameters) {
-		if (this.processorDescriptor != null) {
-			log.trace("Use descriptor {} to init parameters for processor {}", this.processorDescriptor.getFullBeanId(), this.getFullBeanId());
-			this.processorDescriptor.initBeanParameters(this, parameters);
-		} else {
-			ProcessorUtils.initBeanParameters(this, parameters, this.getRuntimeContext());
-		}
-	}
+	// =========================================================================
+	// Parameter Extraction
+	// =========================================================================
 
 	/**
-	 * Liefert die tatsÃ¤chlich gesetzten Parameter dieses Prozessors. Die Parameterwerte werden dabei wieder zurÃ¼cktransformiert, so dass sie
-	 * jederzeit als json reprÃ¤sentiert werden kÃ¶nnen.
-	 * @return
+	 * Liefert die tatsächlich gesetzten Parameter dieses Prozessors.
 	 */
 	public Map<String, Object> extractEffectiveProcessorParameters() {
 		if (processorDescriptor != null) return processorDescriptor.extractEffectiveParameters(this);
@@ -235,7 +195,7 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		IProcessorDescriptor instanceDescriptor = this.processorDescriptor;
 		instanceDescriptor = instanceDescriptor != null ? instanceDescriptor : this.generateProcessorDescriptorInstance(LoadStrategy.DEEP);
 		if (instanceDescriptor == null) {
-			log.error("Konnte keinen Instanz-Deskriptor fÃ¼r {} erzeugen. Extraktion nicht mÃ¶glich.", this.getFullBeanId());
+			log.error("Konnte keinen Instanz-Deskriptor für {} erzeugen. Extraktion nicht möglich.", this.getFullBeanId());
 			return new HashMap<>();
 		}
 
@@ -257,84 +217,20 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		return runtimeContext;
 	}
 
-	//TODO: ist zu Ã¼berarbeiten
-	protected void resetProcessor() {
-		try {
-			if (this.runtimeContext.getParentContext() != null) {
-				this.runtimeContext.getParentContext().removeReconContext(this.runtimeContext);
-				init(this.runtimeContext.getParentContext());
-			} else {
-				init(this.runtimeContext);
-			}
-		} catch (Exception e) {
-			log.error("Can not reset processor {}, Msg: {}", getIdentifier(), e.toString());
-		}
-	}
-	//----------------------------------------------------------------------------------------------------------------------------
-	//endregion IProcessor Implementation
-
-	//region IParameterChangeListener Implementation
-	//----------------------------------------------------------------------------------------------------------------------------
-
-	/**
-	 * Wir verwenden hier eine einfache Implementierung des IParameterChangelistener. Diese setzt voraus, das
-	 * der ParameterProvider, der das Event triggert auch zu diesem Prozessor gehÃ¶rt.
-	 * @param parameterName
-	 * @param value
-	 * @param identifier - Prozessoridentifier
-	 */
-	@Override
-	public void parameterChanged(String parameterName, Object value, String identifier) {
-		try {
-			resetProcessor();
-		} catch (Exception e) {
-			log.error("Can not change parameter {} with value {} for identifier {}! Msg: {}",
-					parameterName, value, identifier, e.toString());
-		}
-	}
+	// =========================================================================
+	// Processor Creation (delegate to Incubator in future)
+	// =========================================================================
 
 	@Override
-	public void parametersChanged(Map<String, Object> parameters, String identifier) {
-		try {
-			resetProcessor();
-		} catch (Exception e) {
-			log.error("Can not change parameters {} for identifier {}! Msg: {}",
-					LogOutputHelper.toLogString(parameters), identifier, e.toString());
+	public <T extends IProcessor> T createProcessor(Class<T> clazz, String processorIdentifier, String processorType,
+			IProcessor parentProcessor, List<Map<String,Map<String, Object>>> beanParameterMaps) {
+		IRuntimeContextProviderProcessor cp = contextProviderProcessor != null ? contextProviderProcessor :
+				(runtimeContext != null ? runtimeContext.getContextProviderProcessor() : null);
+		if (cp == null) {
+			log.warn("{}: createProcessor — kein ContextProvider verfügbar", getFullBeanId());
+			return null;
 		}
-	}
-
-	@Override
-	public void parametersChanged() {
-		try {
-			resetProcessor();
-		} catch (Exception e) {
-			log.error("can not change parameters! Msg: {}", e.toString());
-		}
-	}
-	//----------------------------------------------------------------------------------------------------------------------------
-	//endregion IParameterChangeListener Implementation
-
-
-	/**
-	 * ErmÃ¶glich das dynamische Erzeugen von Prozessoren auf Basis von Programmdaten.
-	 *
-	 * @param processorIdentifier - falls vorhanden, wird dieser benutzt, um aus der beanParameterMap den gewÃ¼nschten Prozessor zu erzeugen.
-	 * @param processorType - wurde kein processorIdentifier definiert, so kann mit dem Typ der gewÃ¼nschte Prozessor aus der Map Ã¼ber den defaultBeanTypeMapProcessor bestimmt werden.
-	 * @param beanParameterMaps
-	 * @return
-	 *
-	 */
-	protected IProcessor createProcessor(String processorIdentifier, String processorType, List<Map<String,Map<String, Object>>> beanParameterMaps) {
-		IProcessorContext newCtx = this.getUsedContextProviderProcessor(null).createContext(this.runtimeContext, beanParameterMaps);
-		if (processorIdentifier != null)
-			return this.getUsedContextProviderProcessor(null).getProcessorProvider().getProcessorForBeanId(processorIdentifier, newCtx, this);
-		if (processorType == null) processorType = "requestProzessor";
-		return getUsedContextProviderProcessor(null).getProcessorProvider().getProcessorForType(processorType, newCtx, this);
-	}
-
-
-	public  <T extends IProcessor> T  createProcessor(Class<T> clazz, String processorIdentifier, String processorType, IProcessor parentProcessor, List<Map<String,Map<String, Object>>> beanParameterMaps) {
-		IProcessorContext newCtx = this.getUsedContextProviderProcessor(null).createContext(this.runtimeContext, beanParameterMaps);
+		IProcessorContext newCtx = cp.createContext(this.runtimeContext, beanParameterMaps);
 		if (processorIdentifier != null) {
 			log.info("Try to create processor for identifier {}", processorIdentifier);
 			return newCtx.getContextProviderProcessor().getProcessorProvider().getProcessorForBeanId(clazz, processorIdentifier, newCtx, parentProcessor);
@@ -344,15 +240,31 @@ public abstract class AbstractProcessor implements IProcessor, IParameterChangeL
 		return newCtx.getContextProviderProcessor().getProcessorProvider().getProcessorForType(clazz, processorType, newCtx, parentProcessor);
 	}
 
-	public  <T extends IProcessor> T  createProcessor(Class<T> clazz, String processorIdentifier, String processorType, List<Map<String,Map<String, Object>>> beanParameterMaps) {
+	@Override
+	public <T extends IProcessor> T createProcessor(Class<T> clazz, String processorIdentifier, String processorType,
+			List<Map<String,Map<String, Object>>> beanParameterMaps) {
 		return createProcessor(clazz, processorIdentifier, processorType, this, beanParameterMaps);
 	}
 
-	public IRuntimeContextProviderProcessor getUsedContextProviderProcessor(IProcessorContext ctx) {
-		if (this.contextProviderProcessor != null)
-			return contextProviderProcessor;
-		if (this.getRuntimeContext() != null) return this.getRuntimeContext().getContextProviderProcessor();
+	// =========================================================================
+	// IParameterChangeListener
+	// =========================================================================
 
-		return ctx != null ? ctx.getContextProviderProcessor() : null;
+	@Override
+	public void parameterChanged(String parameterName, Object value, String identifier) {
+		log.debug("{}: parameterChanged {}={}", getIdentifier(), parameterName, value);
+		processorOnDestroy();
+	}
+
+	@Override
+	public void parametersChanged(Map<String, Object> parameters, String identifier) {
+		log.debug("{}: parametersChanged for {}", getIdentifier(), identifier);
+		processorOnDestroy();
+	}
+
+	@Override
+	public void parametersChanged() {
+		log.debug("{}: parametersChanged", getIdentifier());
+		processorOnDestroy();
 	}
 }

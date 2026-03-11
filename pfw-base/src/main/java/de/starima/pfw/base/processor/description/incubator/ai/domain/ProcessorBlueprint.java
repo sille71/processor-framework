@@ -1,5 +1,7 @@
 package de.starima.pfw.base.processor.description.incubator.ai.domain;
 
+import de.starima.pfw.base.annotation.ProcessorParameter;
+import de.starima.pfw.base.annotation.ValueObject;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,15 +17,19 @@ import java.util.List;
  */
 @Getter
 @Builder
+@ValueObject
 public class ProcessorBlueprint {
 
     /** Prozessor-Prototypen-ID. */
+    @ProcessorParameter(description = "Prototype ID of the described processor")
     String prototypeId;
 
     /** Vollständige Beschreibung. */
+    @ProcessorParameter(description = "Full human-readable description of the processor")
     String description;
 
     /** Alle Parameter mit vollständigen Constraint-Informationen. */
+    @ProcessorParameter(description = "Complete list of parameter blueprints with type and constraint information")
     List<ParameterBlueprint> parameters;
 
     /**

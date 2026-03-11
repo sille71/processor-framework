@@ -1,5 +1,7 @@
 package de.starima.pfw.base.processor.description.incubator.ai.domain;
 
+import de.starima.pfw.base.annotation.ProcessorParameter;
+import de.starima.pfw.base.annotation.ValueObject;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,6 +26,7 @@ import java.util.Map;
  */
 @Getter
 @Builder
+@ValueObject
 public class AIIntention {
 
     /**
@@ -31,6 +34,7 @@ public class AIIntention {
      *
      * <p>Bekannte Werte: CONFIGURE_PROCESS, MODIFY_PROCESS, EXPLAIN, QUERY, CONFIRM, REJECT.
      */
+    @ProcessorParameter(description = "Classified intent type extracted from user input")
     String intentType;
 
     /**
@@ -38,9 +42,11 @@ public class AIIntention {
      *
      * <p>Beispiel: {@code {path: "/data/import", encoding: "UTF-8", source: "CSV"}}.
      */
+    @ProcessorParameter(description = "Named entities extracted from the user's natural language input")
     Map<String, Object> entities;
 
     /** Der originale Nutzertext. */
+    @ProcessorParameter(description = "Original unmodified user input text")
     String rawText;
 
     /**
@@ -48,5 +54,6 @@ public class AIIntention {
      *
      * <p>Bei niedrigem Score (< 0.5) sollte eine Rückfrage gestellt werden.
      */
+    @ProcessorParameter(description = "Confidence score for the detected intent, range 0.0–1.0")
     float confidence;
 }

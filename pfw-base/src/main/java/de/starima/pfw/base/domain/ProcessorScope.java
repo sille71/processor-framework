@@ -14,5 +14,8 @@ public enum ProcessorScope {
     parentcontext,
     //der Prozessor wird im Root Kontext (also im Kontext der Instance) registriert und ist damit global. BeanId:  @<prototypeId>:<identifier>@instance
     instance,
+    //der Prozessor muss bereits im Kontext vorhanden sein — KEINE Erzeugung. Er wird von einem früheren RunLevel bereitgestellt.
+    // BeanId: <prototypeId>:<identifier>@provided
+    provided,
     unknown
 }

@@ -31,6 +31,12 @@ public interface IProcessor {
 	public void processorOnRefresh();
 
 	/**
+	 * Lifecycle-Hook für Shutdown und Refresh.
+	 * Wird aufgerufen bevor der Prozessor deregistriert oder ersetzt wird.
+	 */
+	public void processorOnDestroy();
+
+	/**
 	 * Initialisiert eine mÃ¶gliche Default beanParameterMap. Diese kann entweder direkt im Java Code verankert werden, oder sie wir in einer json Datei unter
 	 * resources/defaults/processors abgelegt. Der Name der json Datei kann in der Prozessor Annotation unter defaultBeanParameterMapFileName() definiert werden.
 	 * Wird kein Name angegeben, so wird der kleingeschriebene Klassenname verwendet.
