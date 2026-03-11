@@ -40,32 +40,4 @@ public abstract class AbstractInstanceProcessorRuntime extends AbstractProcessor
 
     @ProcessorParameter(value = "true")
     private boolean useDefaultBeanParameterMap = true;
-
-    @PostConstruct
-    public void initProcessor() {
-        try {
-            log.info("Start bootstrap ...");
-            setScope(ProcessorScope.instance);
-            this.init(null);
-        } catch (Exception e) {
-            log.error("Can not initialize instance processor!", e);
-        }
-    }
-
-    protected Object processRequest(Object request) {
-        log.info("{}: processRequest of type {} ...", getFullBeanId(), request.getClass().getName());
-        if (requestDispatcherProcessor != null) {
-            Object response = requestDispatcherProcessor.dispatchRequest(request);
-
-            if (responseDispatcherProcessor != null) {
-                response = responseDispatcherProcessor.dispatchResponse(response);
-            }
-
-            if (response != null) {
-                return response;
-            }
-        }
-        log.info("{}: processRequest - no dispatcher found or is responsible for request", getFullBeanId());
-        return ResponseEntity.notFound().build();
-    }
 }

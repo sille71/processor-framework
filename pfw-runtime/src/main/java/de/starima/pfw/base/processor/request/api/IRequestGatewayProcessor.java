@@ -10,7 +10,7 @@ import de.starima.pfw.base.processor.api.IProcessor;
  * leitet Responses über ResponseDispatcherChain weiter.
  *
  * <p>Services registrieren ihre Dispatcher zur Laufzeit über
- * {@link #registerDispatcher(IRequestDispatcherProcessor)}.
+ * {@link #registerRequestDispatcher(IRequestDispatcherProcessor)}.
  * Die allowedDispatcherSet-Policy schränkt die zulässigen Dispatcher ein.
  *
  * <p>Biologisch: Die Zellmembran — kontrolliert, was ein- und ausgeht.
@@ -30,17 +30,19 @@ public interface IRequestGatewayProcessor extends IProcessor {
     /** Verarbeitet einen Request über die Dispatcher-Chain. */
     Object processRequest(Object request);
 
-    /** Der konfigurierte Request-Dispatcher (erster in der Chain). */
-    IRequestDispatcherProcessor getRequestDispatcher();
-
-    /** Der konfigurierte Response-Dispatcher. */
-    IResponseDispatcherProcessor getResponseDispatcher();
-
     /**
-     * Registriert einen Dispatcher zur Laufzeit.
+     * Registriert einen Request Dispatcher zur Laufzeit.
      * Wird gegen die allowedDispatcherSet-Policy geprüft.
      *
      * @return true wenn erfolgreich registriert, false wenn abgelehnt
      */
-    boolean registerDispatcher(IRequestDispatcherProcessor dispatcher);
+    boolean registerRequestDispatcher(IRequestDispatcherProcessor dispatcher);
+
+    /**
+     * Registriert einen Response Dispatcher zur Laufzeit.
+     * Wird gegen die allowedResponseDispatcherSet-Policy geprüft.
+     *
+     * @return true wenn erfolgreich registriert, false wenn abgelehnt
+     */
+    boolean registerResponseDispatcher(IResponseDispatcherProcessor dispatcher);
 }

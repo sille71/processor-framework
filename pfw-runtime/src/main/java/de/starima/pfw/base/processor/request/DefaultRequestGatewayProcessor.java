@@ -15,17 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Standard-Gateway mit Dispatcher-Chain, dynamischer Registrierung und Policy.
+ * Standard-Gateway mit Dispatcher-Chains, dynamischer Registrierung und Policy.
  *
- * <p>Chain-of-Responsibility: Der erste zuständige Dispatcher gewinnt.
- * Services können Dispatcher zur Laufzeit via {@link #registerDispatcher} hinzufügen.
- * Die allowedDispatcherSet-Policy bestimmt, welche Dispatcher akzeptiert werden.
+ * <p>Request-Chain-of-Responsibility: Der erste zuständige Request-Dispatcher gewinnt.
+ * Response-Chain-of-Responsibility: Der erste zuständige Response-Dispatcher gewinnt.
+ *
+ * <p>Services können Dispatcher zur Laufzeit via
+ * {@link #registerRequestDispatcher} / {@link #registerResponseDispatcher} hinzufügen.
+ * Die allowedDispatcherSet-Policies bestimmen, welche Dispatcher akzeptiert werden.
  */
 @Slf4j
 @Getter
 @Setter
 @Processor(
-        description = "Standard-Gateway mit Dispatcher-Chain, " +
+        description = "Standard-Gateway mit Request- und Response-Dispatcher-Chain, " +
                 "dynamischer Registrierung und Zulassungs-Policy.",
         categories = {"request", "gateway"},
         tags = {"communication", "gateway", "request", "response", "policy"}
@@ -33,59 +36,67 @@ import java.util.List;
 public class DefaultRequestGatewayProcessor extends AbstractProcessor
         implements IRequestGatewayProcessor {
 
-    @ProcessorParameter(description = "Die statisch konfigurierten Dispatcher. " +
-            "Zur Laufzeit können weitere über registerDispatcher() hinzukommen.")
-    private List<IRequestDispatcherProcessor> dispatchers;
+    @ProcessorParameter(description = "Die statisch konfigurierten Request-Dispatcher. " +
+            "Zur Laufzeit können weitere über registerRequestDispatcher() hinzukommen.")
+    private List<IRequestDispatcherProcessor> requestDispatchers;
 
-    @ProcessorParameter(description = "Response-Dispatcher-Chain.")
-    private IResponseDispatcherProcessor responseDispatcher;
+    @ProcessorParameter(description = "Die statisch konfigurierten Response-Dispatcher. " +
+            "Zur Laufzeit können weitere über registerResponseDispatcher() hinzukommen.")
+    private List<IResponseDispatcherProcessor> responseDispatchers;
 
-    @ProcessorParameter(description = "Erlaubte Dispatcher-PrototypIDs. " +
+    @ProcessorParameter(description = "Erlaubte Request-Dispatcher-PrototypIDs. " +
             "Wenn gesetzt, werden nur Dispatcher akzeptiert, deren PrototypID " +
             "in dieser Menge enthalten ist. Wenn null, werden alle akzeptiert.")
-    private ISetProcessor<String> allowedDispatcherSet;
+    private ISetProcessor<String> allowedRequestDispatcherSet;
+
+    @ProcessorParameter(description = "Erlaubte Response-Dispatcher-PrototypIDs. " +
+            "Wenn gesetzt, werden nur Dispatcher akzeptiert, deren PrototypID " +
+            "in dieser Menge enthalten ist. Wenn null, werden alle akzeptiert.")
+    private ISetProcessor<String> allowedResponseDispatcherSet;
 
     @Override
     public Object processRequest(Object request) {
-        if (dispatchers == null || dispatchers.isEmpty()) {
-            log.warn("Gateway: keine Dispatcher konfiguriert");
+        if (requestDispatchers == null || requestDispatchers.isEmpty()) {
+            log.warn("Gateway: keine Request-Dispatcher konfiguriert");
             return null;
         }
 
-        // Chain-of-Responsibility: erster zuständiger Dispatcher gewinnt
-        for (IRequestDispatcherProcessor dispatcher : dispatchers) {
+        // Request-Chain-of-Responsibility: erster zuständiger Dispatcher gewinnt
+        for (IRequestDispatcherProcessor dispatcher : requestDispatchers) {
             if (dispatcher.isResponsibleForRequest(request)) {
-                log.debug("Gateway: Dispatcher '{}' übernimmt Request",
+                log.debug("Gateway: Request-Dispatcher '{}' übernimmt Request",
                         dispatcher.getFullBeanId());
                 Object response = dispatcher.dispatchRequest(request);
 
-                if (responseDispatcher != null && response != null) {
-                    response = responseDispatcher.dispatchResponse(response);
+                // Response-Chain-of-Responsibility: erster zuständiger Dispatcher gewinnt
+                if (response != null && responseDispatchers != null) {
+                    for (IResponseDispatcherProcessor responseDispatcher : responseDispatchers) {
+                        if (responseDispatcher.isResponsibleForResponse(response)) {
+                            log.debug("Gateway: Response-Dispatcher '{}' übernimmt Response",
+                                    responseDispatcher.getFullBeanId());
+                            response = responseDispatcher.dispatchResponse(response);
+                            break;
+                        }
+                    }
                 }
                 return response;
             }
         }
 
-        log.info("Gateway: kein Dispatcher zuständig für Request vom Typ {}",
+        log.info("Gateway: kein Request-Dispatcher zuständig für Request vom Typ {}",
                 request != null ? request.getClass().getSimpleName() : "null");
         return null;
     }
 
     @Override
-    public IRequestDispatcherProcessor getRequestDispatcher() {
-        // Abwärtskompatibilität — liefert den ersten Dispatcher
-        return (dispatchers != null && !dispatchers.isEmpty()) ? dispatchers.get(0) : null;
-    }
-
-    @Override
-    public boolean registerDispatcher(IRequestDispatcherProcessor dispatcher) {
+    public boolean registerRequestDispatcher(IRequestDispatcherProcessor dispatcher) {
         if (dispatcher == null) return false;
 
         // Policy-Prüfung
-        if (allowedDispatcherSet != null) {
+        if (allowedRequestDispatcherSet != null) {
             String prototypeId = dispatcher.getProtoTypeIdentifier();
-            if (!allowedDispatcherSet.isMember(prototypeId)) {
-                log.warn("Gateway: Dispatcher '{}' (prototypeId='{}') nicht in " +
+            if (!allowedRequestDispatcherSet.isMember(prototypeId)) {
+                log.warn("Gateway: Request-Dispatcher '{}' (prototypeId='{}') nicht in " +
                         "der erlaubten Menge — abgelehnt",
                         dispatcher.getFullBeanId(), prototypeId);
                 return false;
@@ -93,21 +104,55 @@ public class DefaultRequestGatewayProcessor extends AbstractProcessor
         }
 
         // Duplikat-Prüfung
-        if (dispatchers == null) {
-            dispatchers = new ArrayList<>();
+        if (requestDispatchers == null) {
+            requestDispatchers = new ArrayList<>();
         }
-        boolean alreadyRegistered = dispatchers.stream()
+        boolean alreadyRegistered = requestDispatchers.stream()
                 .anyMatch(d -> d.getFullBeanId() != null
                         && d.getFullBeanId().equals(dispatcher.getFullBeanId()));
         if (alreadyRegistered) {
-            log.debug("Gateway: Dispatcher '{}' bereits registriert — übersprungen",
+            log.debug("Gateway: Request-Dispatcher '{}' bereits registriert — übersprungen",
                     dispatcher.getFullBeanId());
             return true;
         }
 
-        dispatchers.add(dispatcher);
-        log.info("Gateway: Dispatcher '{}' registriert (gesamt: {})",
-                dispatcher.getFullBeanId(), dispatchers.size());
+        requestDispatchers.add(dispatcher);
+        log.info("Gateway: Request-Dispatcher '{}' registriert (gesamt: {})",
+                dispatcher.getFullBeanId(), requestDispatchers.size());
+        return true;
+    }
+
+    @Override
+    public boolean registerResponseDispatcher(IResponseDispatcherProcessor dispatcher) {
+        if (dispatcher == null) return false;
+
+        // Policy-Prüfung
+        if (allowedResponseDispatcherSet != null) {
+            String prototypeId = dispatcher.getProtoTypeIdentifier();
+            if (!allowedResponseDispatcherSet.isMember(prototypeId)) {
+                log.warn("Gateway: Response-Dispatcher '{}' (prototypeId='{}') nicht in " +
+                        "der erlaubten Menge — abgelehnt",
+                        dispatcher.getFullBeanId(), prototypeId);
+                return false;
+            }
+        }
+
+        // Duplikat-Prüfung
+        if (responseDispatchers == null) {
+            responseDispatchers = new ArrayList<>();
+        }
+        boolean alreadyRegistered = responseDispatchers.stream()
+                .anyMatch(d -> d.getFullBeanId() != null
+                        && d.getFullBeanId().equals(dispatcher.getFullBeanId()));
+        if (alreadyRegistered) {
+            log.debug("Gateway: Response-Dispatcher '{}' bereits registriert — übersprungen",
+                    dispatcher.getFullBeanId());
+            return true;
+        }
+
+        responseDispatchers.add(dispatcher);
+        log.info("Gateway: Response-Dispatcher '{}' registriert (gesamt: {})",
+                dispatcher.getFullBeanId(), responseDispatchers.size());
         return true;
     }
 }
