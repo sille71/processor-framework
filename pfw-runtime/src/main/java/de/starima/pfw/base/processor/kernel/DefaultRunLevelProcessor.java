@@ -6,7 +6,6 @@ import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.processor.context.api.ITaskContext;
 import de.starima.pfw.base.processor.kernel.api.IRunLevelProcessor;
-import de.starima.pfw.base.processor.kernel.domain.RunLevel;
 import de.starima.pfw.base.util.ProcessorUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,41 +18,40 @@ import java.util.List;
 /**
  * Standard-Implementierung eines RunLevel-Prozessors.
  *
- * <p>Repräsentiert einen Systemzustand und verwaltet die
- * Prozessoren (Targets), die für diesen Zustand erzeugt werden.
- *
- * <p>Die Targets werden beim Aktivieren im Kontext registriert
- * und beim Deaktivieren in umgekehrter Reihenfolge heruntergefahren.
+ * <p>Name und Rang sind frei konfigurierbar über beanParameterMap —
+ * kein Java-Enum. Neue RunLevels sind ohne Code-Änderung möglich.
  */
 @Slf4j
 @Getter
 @Setter
 @Processor(
-        description = "Standard-RunLevel-Prozessor. Konfiguriert über Targets, " +
-                "die beim Aktivieren erzeugt und im Kontext registriert werden.",
+        description = "Standard-RunLevel-Prozessor. RunLevel-Name und Rang " +
+                "sind frei konfigurierbar über beanParameterMap.",
         categories = {"kernel", "lifecycle"},
         tags = {"runlevel", "target", "lifecycle"}
 )
 public class DefaultRunLevelProcessor extends AbstractProcessor implements IRunLevelProcessor {
 
-    @ProcessorParameter(description = "Der RunLevel, den dieser Prozessor repräsentiert.")
-    private RunLevel runLevel;
+    @ProcessorParameter(description = "Name des RunLevels (z.B. 'RUNTIME', 'DATA_IMPORT'). Frei wählbar.")
+    private String runLevelName;
 
-    @ProcessorParameter(description = "Die zu erzeugenden Target-Prozessoren. " +
-            "Werden beim Aktivieren über den Incubator erzeugt (ab RunLevel >= INCUBATION) " +
-            "oder direkt über den BeanProvider (RunLevel BOOTSTRAP).")
+    @ProcessorParameter(description = "Rang für die Sortierung. Niedrigere Werte werden zuerst aktiviert.",
+            value = "0")
+    private int rank;
+
+    @ProcessorParameter(description = "Die zu erzeugenden Target-Prozessoren.")
     private List<IProcessor> targets;
 
     @Override
     public void activate(ITaskContext ctx) {
         if (targets == null || targets.isEmpty()) {
-            log.info("RunLevel {}: keine Targets konfiguriert", runLevel);
+            log.info("RunLevel '{}' (rank={}): keine Targets konfiguriert", runLevelName, rank);
             return;
         }
         for (IProcessor target : targets) {
             if (target != null && ctx.getRuntimeContext() != null) {
                 ProcessorUtils.registerProcessorInScope(target, ctx.getRuntimeContext());
-                log.info("RunLevel {}: Target '{}' aktiviert", runLevel, target.getFullBeanId());
+                log.info("RunLevel '{}': Target '{}' aktiviert", runLevelName, target.getFullBeanId());
             }
         }
     }
@@ -66,7 +64,7 @@ public class DefaultRunLevelProcessor extends AbstractProcessor implements IRunL
         for (IProcessor target : reversed) {
             if (target != null) {
                 target.processorOnDestroy();
-                log.info("RunLevel {}: Target '{}' deaktiviert", runLevel, target.getFullBeanId());
+                log.info("RunLevel '{}': Target '{}' deaktiviert", runLevelName, target.getFullBeanId());
             }
         }
     }

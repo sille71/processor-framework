@@ -2,7 +2,6 @@ package de.starima.pfw.base.processor.kernel.api;
 
 import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.processor.context.api.ITaskContext;
-import de.starima.pfw.base.processor.kernel.domain.RunLevel;
 
 import java.util.List;
 
@@ -16,16 +15,24 @@ import java.util.List;
  */
 public interface IRunLevelManager extends IProcessor {
 
-    /** Der aktuell aktive RunLevel. */
-    RunLevel getCurrentRunLevel();
+    /** Name des aktuell aktiven RunLevels. */
+    String getCurrentRunLevelName();
+
+    /** Rang des aktuell aktiven RunLevels. */
+    int getCurrentRank();
 
     /**
-     * Bringt das System in den Ziel-RunLevel.
+     * Bringt das System bis zum RunLevel mit dem angegebenen Namen.
      * Aktiviert alle RunLevelProcessoren zwischen current und target.
-     * Bei Rückschritt: deaktiviert in umgekehrter Reihenfolge.
      */
-    void advanceTo(RunLevel target, ITaskContext ctx);
+    void advanceTo(String targetRunLevelName, ITaskContext ctx);
 
-    /** Alle konfigurierten RunLevelProcessoren, geordnet nach rank. */
+    /**
+     * Bringt das System bis zum RunLevel mit dem angegebenen Rang.
+     * Nützlich für numerische CLI-Parameter.
+     */
+    void advanceToRank(int targetRank, ITaskContext ctx);
+
+    /** Alle konfigurierten RunLevelProcessoren, geordnet nach Rang. */
     List<IRunLevelProcessor> getRunLevels();
 }

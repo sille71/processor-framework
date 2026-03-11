@@ -7,7 +7,7 @@ import de.starima.pfw.base.processor.context.api.IRuntimeContextProviderProcesso
 import de.starima.pfw.base.processor.context.domain.DefaultTaskContext;
 import de.starima.pfw.base.processor.kernel.api.IKernelBeanProvider;
 import de.starima.pfw.base.processor.kernel.api.IRunLevelManager;
-import de.starima.pfw.base.processor.kernel.domain.RunLevel;
+import de.starima.pfw.base.processor.kernel.domain.RunLevels;
 import de.starima.pfw.base.util.ProcessorUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -54,10 +54,10 @@ public class KernelProcessor extends AbstractProcessor {
             "alle Systemzustände ab RunLevel INCUBATION")
     private IRunLevelManager runLevelManager;
 
-    @ProcessorParameter(value = "APPLICATION",
-            description = "Das Ziel-RunLevel beim Start. " +
-                    "Überschreibbar per Konfiguration.")
-    private RunLevel targetRunLevel = RunLevel.APPLICATION;
+    @ProcessorParameter(value = RunLevels.APPLICATION,
+            description = "Das Ziel-RunLevel beim Start (Name als String). " +
+                    "Per CLI: --pfw.target-runlevel=INCUBATION")
+    private String targetRunLevel = RunLevels.APPLICATION;
 
     @Autowired
     public KernelProcessor(
@@ -86,13 +86,12 @@ public class KernelProcessor extends AbstractProcessor {
                 taskCtx.setRuntimeContext(this.runtimeContext);
                 runLevelManager.advanceTo(targetRunLevel, taskCtx);
             } else {
-                log.info("Kernel: kein RunLevelManager konfiguriert — bleibe bei RunLevel BOOTSTRAP");
+                log.info("Kernel: kein RunLevelManager konfiguriert — bleibe bei RunLevel {}", RunLevels.BOOTSTRAP);
             }
 
-            log.info("=== Kernel bereit. RunLevel: {} ===",
-                    runLevelManager != null
-                            ? runLevelManager.getCurrentRunLevel()
-                            : RunLevel.BOOTSTRAP);
+            log.info("=== Kernel bereit. RunLevel: '{}' (rank={}) ===",
+                    runLevelManager != null ? runLevelManager.getCurrentRunLevelName() : RunLevels.BOOTSTRAP,
+                    runLevelManager != null ? runLevelManager.getCurrentRank() : RunLevels.RANK_BOOTSTRAP);
 
         } catch (Exception e) {
             log.error("Kernel-Bootstrap fehlgeschlagen!", e);

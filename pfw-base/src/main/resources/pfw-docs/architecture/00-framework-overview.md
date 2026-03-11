@@ -115,12 +115,23 @@ Die Abhängigkeitsrichtung ist einheitlich: `f = Σ ∘ τ`.
 
 ## 8. Kernel und RunLevels
 
+RunLevels sind **frei konfigurierbar** — Name und Rang als Parameter, kein Java-Enum.
+Neue RunLevels sind ohne Code-Änderungen möglich.
+
 ```
-RunLevel 0:   Bootstrap (BeanProvider, KernelContext)
-RunLevel 0.5: Framework Adoption (Spring-Beans → Framework-Mitglieder)
-RunLevel 1:   Incubator verfügbar (InstanceProvider, Descriptoren)
-RunLevel 2:   Communication Gateway verfügbar
-RunLevel 3:   Application Service verfügbar
+Der Kernel kennt nur den RunLevelManager. Alle RunLevels sind konfiguriert,
+nicht hardcoded (außer RunLevel 0: Bootstrap).
+
+KernelProcessor → RunLevelManager → RunLevelProcessors → Targets
+    (PID 1)           (systemd)         (unit files)      (services)
+
+Vordefinierte Stufen (Rang als Integer, Name als String):
+  rank=0:   BOOTSTRAP   — KernelContext, BeanProvider (hardcoded)
+  rank=10:  INCUBATION  — FrameworkIncubator, InstanceProviderChain, Descriptoren
+  rank=20:  RUNTIME     — Gateway, Dispatcher, PfwRestController
+  rank=30:  APPLICATION — Fachliche Services
+
+CLI: --pfw.target-runlevel=RUNTIME (fährt nur bis RUNTIME hoch)
 ```
 
 

@@ -2,13 +2,15 @@ package de.starima.pfw.base.processor.kernel.api;
 
 import de.starima.pfw.base.processor.api.IProcessor;
 import de.starima.pfw.base.processor.context.api.ITaskContext;
-import de.starima.pfw.base.processor.kernel.domain.RunLevel;
 
 import java.util.List;
 
 /**
  * Ein RunLevelProcessor beschreibt einen Systemzustand und die
  * Prozessoren (Targets), die dafür erzeugt werden müssen.
+ *
+ * <p>RunLevels sind frei konfigurierbar — Name und Rang sind
+ * ProcessorParameter, kein Enum.
  *
  * <p>Entspricht einem systemd-Target: deklarativ, nicht imperativ.
  * Der RunLevelProcessor kennt keine anderen RunLevels — das ist
@@ -19,8 +21,11 @@ import java.util.List;
  */
 public interface IRunLevelProcessor extends IProcessor {
 
-    /** Der RunLevel, den dieser Prozessor repräsentiert. */
-    RunLevel getRunLevel();
+    /** Name des RunLevels (z.B. "RUNTIME", "DATA_IMPORT"). Frei wählbar. */
+    String getRunLevelName();
+
+    /** Rang für die Sortierung. Niedrigere Werte werden zuerst aktiviert. */
+    int getRank();
 
     /**
      * Die Prozessoren, die für diesen RunLevel erzeugt und
@@ -37,8 +42,6 @@ public interface IRunLevelProcessor extends IProcessor {
 
     /**
      * Deaktiviert diesen RunLevel: Fährt Targets geordnet herunter.
-     * Aufbau gehört dem RunLevelProcessor. Abbau gehört dem Kernel.
-     * Aber der Kernel delegiert den Abbau an den RunLevelProcessor.
      */
     void deactivate(ITaskContext ctx);
 }

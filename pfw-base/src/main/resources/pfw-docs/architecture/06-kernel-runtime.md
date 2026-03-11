@@ -13,18 +13,20 @@ Der Kernel macht genau eine Sache: Er erstellt den RootContext (RunLevel 0: BOOT
 und übergibt dann die Kontrolle an den RunLevelManager. Alles weitere ist "User Space".
 
 
-## RunLevels als Systemzustände
+## RunLevels als konfigurierbare Systemzustände
 
-RunLevels sind **ZUSTÄNDE**, keine Abläufe. Jeder RunLevel garantiert, dass bestimmte
-Prozessoren verfügbar sind.
+RunLevels sind **kein Java-Enum** — sie sind frei konfigurierbare Parameter (Name + Rang).
+Neue RunLevels sind ohne Code-Änderungen möglich.
+
+Vordefinierte Konstanten (Convenience, nicht zwingend):
 
 ```java
-public enum RunLevel {
-    BOOTSTRAP(0),       // KernelContext, BeanProvider, Logging
-    INCUBATION(1),      // FrameworkIncubator, InstanceProviderChain, Descriptoren
-    RUNTIME(2),         // Gateway, Dispatcher, Security
-    APPLICATION(3),     // Fachliche Services
-    SHUTDOWN(99);       // Geordnetes Herunterfahren
+public final class RunLevels {
+    public static final String BOOTSTRAP   = "BOOTSTRAP";   // rank 0
+    public static final String INCUBATION  = "INCUBATION";  // rank 10
+    public static final String RUNTIME     = "RUNTIME";     // rank 20
+    public static final String APPLICATION = "APPLICATION"; // rank 30
+    public static final String SHUTDOWN    = "SHUTDOWN";    // rank 99
 }
 ```
 
@@ -46,17 +48,17 @@ KernelProcessor (@Service, Singleton)
     │
     ▼
 DefaultRunLevelManager
-    │  advanceTo(APPLICATION)
-    │  Iteriert alle konfigurierten RunLevelProcessors
+    │  advanceTo("APPLICATION", taskCtx)
+    │  Iteriert alle konfigurierten RunLevelProcessors (sortiert nach rank)
     │
-    ├─▶ DefaultRunLevelProcessor [INCUBATION]
+    ├─▶ DefaultRunLevelProcessor [name="INCUBATION", rank=10]
     │       targets: [frameworkIncubator, instanceProviderChain, ...]
     │
-    ├─▶ DefaultRunLevelProcessor [RUNTIME]
-    │       targets: [requestGateway]
+    ├─▶ DefaultRunLevelProcessor [name="RUNTIME", rank=20]
+    │       targets: [requestGateway, pfwRestController]
     │
-    └─▶ DefaultRunLevelProcessor [APPLICATION]
-            targets: [csvReconService, ...]
+    └─▶ DefaultRunLevelProcessor [name="APPLICATION", rank=30]
+            targets: [csvReconService, xmlReconService, ...]
 ```
 
 
@@ -73,7 +75,7 @@ Was passiert:
 2. @PostConstruct: RootContext wird erstellt
 3. Kernel registriert sich im RootContext
 4. RunLevelManager wird via BeanProvider geholt
-5. advanceTo(targetRunLevel) wird aufgerufen
+5. advanceTo(targetRunLevel, taskCtx) wird aufgerufen
 ```
 
 ### RunLevel 1+: Selbstorganisierend
@@ -99,25 +101,33 @@ eine beanParameterMap — änderbar ohne Code-Änderungen.
     "targetRunLevel": "APPLICATION"
   },
   "defaultRunLevelManager": {
-    "runLevels": "incubationRunLevel, runtimeRunLevel, applicationRunLevel"
+    "runLevels": "incubationLevel, runtimeLevel, applicationLevel"
   },
-  "incubationRunLevel": {
-    "runLevel": "INCUBATION",
+  "incubationLevel": {
+    "runLevelName": "INCUBATION",
+    "rank": "10",
     "targets": "frameworkIncubator, instanceProviderChain, valueFunctionResolverChain"
   },
-  "runtimeRunLevel": {
-    "runLevel": "RUNTIME",
-    "targets": "requestGateway"
+  "runtimeLevel": {
+    "runLevelName": "RUNTIME",
+    "rank": "20",
+    "targets": "requestGateway, pfwRestController"
   },
-  "applicationRunLevel": {
-    "runLevel": "APPLICATION",
-    "targets": "csvReconService"
+  "applicationLevel": {
+    "runLevelName": "APPLICATION",
+    "rank": "30",
+    "targets": "csvReconService, xmlReconService"
   }
 }
 ```
 
-**Kein Gateway nötig?** Setze `targetRunLevel: INCUBATION`. Der RUNTIME-Level
-und APPLICATION-Level werden nicht aktiviert. Fertig.
+**Kein Gateway nötig?** Setze `targetRunLevel: INCUBATION`. Die höheren RunLevels
+werden nicht aktiviert. Fertig.
+
+**Eigene RunLevels?** Einfach neue DefaultRunLevelProcessor mit eigenem Namen und
+Rang konfigurieren — kein Java-Code nötig.
+
+**CLI-Parameter:** `--pfw.target-runlevel=RUNTIME` setzt das Ziel-RunLevel zur Startzeit.
 
 
 ## Gateway-Architektur
@@ -130,11 +140,13 @@ HTTP Request
     │
     ▼
 PfwRestController (@RestController)
-    │  delegiert an gateway.processRequest(request)
+    │  POST /api/process → gateway.processRequest(beanParameterMap)
+    │  GET  /api/docs/{provider}/{name} → gateway.processRequest(assetRequest)
     │
     ▼
 DefaultRequestGatewayProcessor
-    │  requestDispatcher.dispatchRequest(request)
+    │  Chain-of-Responsibility: erster zuständiger Dispatcher gewinnt
+    │  dispatcher.isResponsibleForRequest(request) → dispatchRequest(request)
     │  responseDispatcher.dispatchResponse(response)
     │
     ▼
@@ -147,6 +159,42 @@ Fachlicher RequestProcessor
 
 Der PfwRestController ist **EINE Stelle für alle REST-Endpoints** — nicht
 verteilt über KernelProcessor und verschiedene Service-Klassen.
+
+
+## Dynamische Dispatcher-Registrierung
+
+Services können sich zur Laufzeit am Gateway registrieren:
+
+```java
+// Im Service-Processor:
+@Override
+public void processorOnInit() {
+    if (gateway != null && csvReconDispatcher != null) {
+        boolean registered = gateway.registerDispatcher(csvReconDispatcher);
+        // false = abgelehnt durch allowedDispatcherSet-Policy
+    }
+}
+```
+
+### allowedDispatcherSet — Policy als Prozessor
+
+Das Gateway kann über einen `ISetProcessor<String>` konfiguriert werden,
+der nur bestimmte Dispatcher zulässt:
+
+```json
+{
+  "requestGateway": {
+    "dispatchers": "jsonDispatcher, assetDispatcher",
+    "allowedDispatcherSet": "gatewayPolicy@instance"
+  },
+  "gatewayPolicy": {
+    "members": "jsonDispatcher, assetDispatcher, csvReconDispatcher"
+  }
+}
+```
+
+Dispatcher, deren prototypeId nicht in der Menge ist, werden abgelehnt.
+Wenn `allowedDispatcherSet` nicht konfiguriert ist, werden alle akzeptiert.
 
 
 ## ProcessorScope.provided
@@ -167,13 +215,14 @@ Bei fehlender Bereitstellung: `ProcessorNotProvidedException` (kein Fallback).
 
 ## Unix-Analogie
 
-| Unix         | PFW                        |
-|--------------|----------------------------|
-| Kernel       | KernelProcessor            |
-| PID 1        | KernelProcessor            |
-| systemd      | DefaultRunLevelManager     |
-| Unit-File    | DefaultRunLevelProcessor   |
-| Service      | Target-Prozessor           |
-| runlevel 3   | RunLevel.RUNTIME           |
-| runlevel 5   | RunLevel.APPLICATION       |
-| Unit-Depends | @ProcessorParameter @provided |
+| Unix           | PFW                          |
+|----------------|------------------------------|
+| Kernel         | KernelProcessor              |
+| PID 1          | KernelProcessor              |
+| systemd        | DefaultRunLevelManager       |
+| Unit-File      | DefaultRunLevelProcessor     |
+| Service        | Target-Prozessor             |
+| runlevel 3     | RunLevel "RUNTIME" (rank=20) |
+| runlevel 5     | RunLevel "APPLICATION" (rank=30) |
+| Unit-Depends   | @ProcessorParameter @provided |
+| /etc/rc.conf   | beanParameterMap             |

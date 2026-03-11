@@ -4,6 +4,7 @@ import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.request.api.IRequestGatewayProcessor;
+import de.starima.pfw.base.processor.request.api.IUrlProviderProcessor;
 import de.starima.pfw.base.processor.request.domain.AssetHttpRequest;
 import de.starima.pfw.base.util.ProcessorUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,78 +14,68 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.Map;
 
 /**
- * Spring REST-Controller für das PFW Gateway.
+ * HTTP-Transport-Adapter für das Gateway.
  *
- * <p>Leitet HTTP-Requests an das Gateway weiter.
- * EINE Stelle für alle REST-Endpoints — nicht verteilt über Kernel und Services.
+ * <p>Zwei Endpoints:
+ * <ul>
+ *   <li>POST /api/process — beanParameterMap als JSON Body</li>
+ *   <li>GET /api/docs/{provider}/{name} — Asset-Download</li>
+ * </ul>
  *
- * <p>Konfigurierbar: das Gateway muss vom RunLevel RUNTIME bereitgestellt sein.
+ * <p>Alles geht durch das Gateway. Der Controller ist nur der
+ * HTTP-Eingang — die Logik steckt in der Dispatcher-Chain.
+ *
+ * <p>EINE Stelle für REST: PfwRestController. Keine Ausnahmen.
  */
 @Slf4j
 @Getter
 @Setter
 @RestController
 @Processor(
-        description = "Spring REST-Controller. Leitet HTTP-Requests an das Gateway weiter. " +
-                "EINE Stelle für alle REST-Endpoints.",
+        description = "HTTP-Transport-Adapter. Leitet HTTP-Requests " +
+                "an das Communication Gateway weiter. EINE Stelle für alle REST-Endpoints.",
         categories = {"request", "rest"},
-        tags = {"rest", "http", "spring", "controller"}
+        tags = {"rest", "http", "spring", "transport"}
 )
 public class PfwRestController extends AbstractProcessor {
 
     @ProcessorParameter(value = "requestGateway@provided",
-            description = "Das Gateway — muss vom RunLevel RUNTIME bereitgestellt sein.")
+            description = "Das Communication Gateway — muss vom RunLevel RUNTIME bereitgestellt sein.")
     private IRequestGatewayProcessor gateway;
 
+    @ProcessorParameter(description = "Stellt die URL dieses Controllers für Clients bereit.")
+    private IUrlProviderProcessor urlProvider;
+
+    // =================================================================
+    // POST: beanParameterMap als JSON
+    // =================================================================
+
     @CrossOrigin(maxAge = 60)
-    @PostMapping(path = "/processBeanParameterMapRequest",
-            consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> processBeanParameterMapRequest(
+    @PostMapping(path = "/api/process", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> processRequest(
             @RequestBody Map<String, Map<String, Object>> beanParameterMap) {
-        log.info("PfwRestController: processBeanParameterMapRequest");
         if (gateway == null) {
             log.warn("PfwRestController: kein Gateway konfiguriert");
-            return ResponseEntity.internalServerError().body("Gateway nicht konfiguriert.");
+            return ResponseEntity.internalServerError().body("Gateway nicht verfügbar.");
         }
-        return ResponseEntity.ok(gateway.processRequest(beanParameterMap));
+        log.debug("PfwRestController: POST /api/process");
+        Object response = gateway.processRequest(beanParameterMap);
+        return ResponseEntity.ok(response);
     }
+
+    // =================================================================
+    // GET: Asset-Download (Dokumentation, Bilder, etc.)
+    // =================================================================
 
     @CrossOrigin(maxAge = 60)
-    @PostMapping(path = "/processMultipartRequest",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> processMultipartRequest(
-            @RequestPart String requestProcessorIdentifier,
-            @RequestPart Map<String, Map<String, Object>> beanParameterMap,
-            @RequestPart MultipartFile file) {
-        log.info("PfwRestController: processMultipartRequest requestProcessor={}", requestProcessorIdentifier);
-        if (gateway == null) {
-            log.warn("PfwRestController: kein Gateway konfiguriert");
-            return ResponseEntity.internalServerError().body("Gateway nicht konfiguriert.");
-        }
-        return ResponseEntity.ok(gateway.processRequest(beanParameterMap));
-    }
-
-    @CrossOrigin(maxAge = 60, origins = {"http://localhost:4200"})
-    @PostMapping(path = {"/processMultipartHttpServletRequest", "/processMultipartHttpServletRequest/"},
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Object processMultipartHttpServletRequest(MultipartHttpServletRequest request) {
-        if (gateway == null) {
-            log.warn("PfwRestController: kein Gateway konfiguriert");
-            return null;
-        }
-        return gateway.processRequest(request);
-    }
-
-    @CrossOrigin(maxAge = 60, origins = {"http://localhost:4200"})
-    @GetMapping(path = {"/api/docs/{assetProviderProcessor}/{assetName}",
-            "/api/docs/{assetProviderProcessor}/{assetName}/"},
-            consumes = {MediaType.ALL_VALUE})
+    @GetMapping(path = {
+            "/api/docs/{assetProviderProcessor}/{assetName}",
+            "/api/docs/{assetProviderProcessor}/{assetName}/"
+    }, consumes = MediaType.ALL_VALUE)
     public ResponseEntity<byte[]> getAsset(
             @PathVariable String assetProviderProcessor,
             @PathVariable String assetName,
@@ -94,11 +85,14 @@ public class PfwRestController extends AbstractProcessor {
             log.warn("PfwRestController: kein Gateway konfiguriert");
             return ResponseEntity.internalServerError().build();
         }
+
         AssetHttpRequest assetHttpRequest = new AssetHttpRequest();
         assetHttpRequest.setAssetName(assetName);
-        assetHttpRequest.setRequest(request);
         assetHttpRequest.setAssetProcessorId(ProcessorUtils.fromUrlSafe(assetProviderProcessor));
+        assetHttpRequest.setRequest(request);
         assetHttpRequest.setType(type);
+
+        log.debug("PfwRestController: GET /api/docs/{}/{}", assetProviderProcessor, assetName);
         return (ResponseEntity<byte[]>) gateway.processRequest(assetHttpRequest);
     }
 }

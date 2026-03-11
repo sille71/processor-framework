@@ -6,7 +6,7 @@ import de.starima.pfw.base.processor.AbstractProcessor;
 import de.starima.pfw.base.processor.context.api.ITaskContext;
 import de.starima.pfw.base.processor.kernel.api.IRunLevelManager;
 import de.starima.pfw.base.processor.kernel.api.IRunLevelProcessor;
-import de.starima.pfw.base.processor.kernel.domain.RunLevel;
+import de.starima.pfw.base.processor.kernel.domain.RunLevels;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,52 +19,72 @@ import java.util.stream.Collectors;
 /**
  * Standard-Implementierung des RunLevel-Managers.
  *
- * <p>Verwaltet die RunLevel-Progression des Systems.
- * Kennt alle konfigurierten RunLevelProcessoren und
- * organisiert Transitionen zwischen Systemzuständen.
- *
- * <p>Der Kernel startet nur den RunLevelManager.
- * Alles weitere ist "User Space".
+ * <p>RunLevels sind frei konfigurierbar — Name und Rang als Parameter,
+ * kein Java-Enum. Neue RunLevels sind ohne Code-Änderung möglich.
  */
 @Slf4j
 @Getter
 @Setter
 @Processor(
         description = "Verwaltet die RunLevel-Progression. " +
-                "Organisiert Transitionen zwischen Systemzuständen.",
+                "RunLevels sind frei konfigurierbar — Name und Rang als Parameter.",
         categories = {"kernel", "lifecycle"},
         tags = {"runlevel", "manager", "lifecycle", "kernel"}
 )
 public class DefaultRunLevelManager extends AbstractProcessor implements IRunLevelManager {
 
-    @ProcessorParameter(description = "Alle konfigurierten RunLevel-Prozessoren, geordnet nach RunLevel-Rank.")
+    @ProcessorParameter(description = "Alle konfigurierten RunLevel-Prozessoren.")
     private List<IRunLevelProcessor> runLevels;
 
-    @ProcessorParameter(value = "BOOTSTRAP",
-            description = "Der aktuell aktive RunLevel.",
+    @ProcessorParameter(value = RunLevels.BOOTSTRAP,
+            description = "Name des aktuell aktiven RunLevels.",
             ignoreInitialization = true)
-    private RunLevel currentRunLevel = RunLevel.BOOTSTRAP;
+    private String currentRunLevelName = RunLevels.BOOTSTRAP;
+
+    @ProcessorParameter(value = "0",
+            description = "Rang des aktuell aktiven RunLevels.",
+            ignoreInitialization = true)
+    private int currentRank = RunLevels.RANK_BOOTSTRAP;
 
     @Override
-    public void advanceTo(RunLevel target, ITaskContext ctx) {
-        if (target == null) {
-            log.warn("DefaultRunLevelManager.advanceTo: target ist null");
+    public void advanceTo(String targetRunLevelName, ITaskContext ctx) {
+        if (targetRunLevelName == null) {
+            log.warn("DefaultRunLevelManager.advanceTo: targetRunLevelName ist null");
             return;
         }
-        log.info("=== RunLevel-Transition: {} → {} ===", currentRunLevel, target);
+
+        List<IRunLevelProcessor> sorted = getRunLevelsSorted();
+
+        IRunLevelProcessor target = sorted.stream()
+                .filter(r -> targetRunLevelName.equals(r.getRunLevelName()))
+                .findFirst()
+                .orElse(null);
+
+        if (target == null) {
+            String available = sorted.stream()
+                    .map(IRunLevelProcessor::getRunLevelName)
+                    .collect(Collectors.joining(", "));
+            throw new IllegalArgumentException(
+                    "RunLevel '" + targetRunLevelName + "' nicht konfiguriert. " +
+                    "Verfügbar: " + available);
+        }
+
+        advanceToRank(target.getRank(), ctx);
+    }
+
+    @Override
+    public void advanceToRank(int targetRank, ITaskContext ctx) {
+        log.info("=== RunLevel-Transition: '{}' (rank={}) → rank={} ===",
+                currentRunLevelName, currentRank, targetRank);
 
         for (IRunLevelProcessor rlp : getRunLevelsSorted()) {
-            RunLevel level = rlp.getRunLevel();
-            if (level == null) {
-                log.warn("DefaultRunLevelManager: RunLevelProcessor '{}' hat keinen RunLevel", rlp.getFullBeanId());
-                continue;
-            }
-            if (level.getRank() > currentRunLevel.getRank()
-                    && level.getRank() <= target.getRank()) {
-                log.info("=== Transition → RunLevel {} ===", level);
+            if (rlp.getRank() > currentRank && rlp.getRank() <= targetRank) {
+                log.info("=== Aktiviere RunLevel '{}' (rank={}) ===",
+                        rlp.getRunLevelName(), rlp.getRank());
                 rlp.activate(ctx);
-                this.currentRunLevel = level;
-                log.info("=== RunLevel {} erreicht ===", level);
+                this.currentRunLevelName = rlp.getRunLevelName();
+                this.currentRank = rlp.getRank();
+                log.info("=== RunLevel '{}' erreicht ===", currentRunLevelName);
             }
         }
     }
@@ -72,8 +92,7 @@ public class DefaultRunLevelManager extends AbstractProcessor implements IRunLev
     private List<IRunLevelProcessor> getRunLevelsSorted() {
         if (runLevels == null) return Collections.emptyList();
         return runLevels.stream()
-                .filter(r -> r.getRunLevel() != null)
-                .sorted(Comparator.comparingInt(r -> r.getRunLevel().getRank()))
+                .sorted(Comparator.comparingInt(IRunLevelProcessor::getRank))
                 .collect(Collectors.toList());
     }
 }
