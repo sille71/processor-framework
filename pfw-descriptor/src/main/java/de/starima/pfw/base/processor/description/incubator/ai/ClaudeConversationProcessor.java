@@ -1,5 +1,8 @@
 package de.starima.pfw.base.processor.description.incubator.ai;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.starima.pfw.base.annotation.Processor;
 import de.starima.pfw.base.annotation.ProcessorParameter;
 import de.starima.pfw.base.processor.AbstractProcessor;
@@ -11,87 +14,110 @@ import de.starima.pfw.base.processor.description.incubator.ai.api.IAIIntentResol
 import de.starima.pfw.base.processor.description.incubator.ai.api.IProcessorCatalog;
 import de.starima.pfw.base.processor.description.incubator.ai.domain.*;
 import de.starima.pfw.base.processor.description.incubator.api.IIncubator;
+import de.starima.pfw.base.processor.description.incubator.domain.DefaultConstructTaskContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
- * Natürlichsprachlicher Konfigurations-Assistent auf Basis der Claude API.
+ * Natürlichsprachlicher Konfigurations-Assistent auf Basis der Anthropic Claude API.
  *
- * <p>Koordiniert den vollständigen Dialog-Flow:
+ * <p>Implementiert einen vollständigen Dialog-Flow:
  * <ol>
- *   <li>{@link IAIIntentResolver} — Text → strukturierte Intention</li>
- *   <li>{@link IProcessorCatalog} — Passende Prozessoren suchen</li>
- *   <li>{@link IAIBlueprintGenerator} — Entwurf generieren</li>
- *   <li>{@link IAIConfigValidator} — Entwurf validieren</li>
- *   <li>{@link IIncubator#startEdit} — Edit-Session starten (bei DRAFT_READY)</li>
+ *   <li>Natürliche Sprache → strukturierte Antwort via Claude</li>
+ *   <li>Inkrementelles Sammeln von Anforderungen durch Rückfragen</li>
+ *   <li>Automatische Blueprint-Generierung wenn genug Info vorhanden</li>
+ *   <li>Entwurf-Validierung via {@link IAIConfigValidator}</li>
+ *   <li>Edit-Session-Start via {@link IIncubator}</li>
+ *   <li>Prozess-Konstruktion via {@link IIncubator#startConstruct}</li>
  * </ol>
  *
- * <p><b>Session 2 (TODO):</b> Vollständige Claude-API-Integration für
- * natürlichsprachliche Antworten und kontextsensitives Intent-Resolver.
+ * <h3>API-Protokoll</h3>
+ * Claude antwortet auf jede Nutzernachricht mit strukturiertem JSON,
+ * das {@code type}, {@code message} und optional {@code beanParameterMap} enthält.
+ * Das ermöglicht state-freie Server-Implementierungen.
  *
- * <h3>Dialog-Zustände</h3>
- * <pre>
- *   GATHERING_REQUIREMENTS → (Entwurf generierbar) → REVIEWING_DRAFT
- *   REVIEWING_DRAFT → (Feedback) → REFINING
- *   REFINING → (überarbeitet) → REVIEWING_DRAFT
- *   REVIEWING_DRAFT → (bestätigt) → CONFIRMED
- *   CONFIRMED → (konstruiert) → COMPLETED
- * </pre>
+ * <h3>Fallback</h3>
+ * Ohne API-Key bleibt die State-Machine funktional, aber ohne KI-Antworten.
  */
 @Slf4j
 @Getter
 @Setter
 @Processor(
-        description = "Natürlichsprachlicher Konfigurations-Assistent (Claude API). " +
-                "Verwaltet den Dialog zwischen Fachanwender und Framework. " +
-                "Stellt Rückfragen, generiert Konfigurationsentwürfe und führt den Nutzer " +
-                "durch den gesamten Konfigurations-Workflow.",
+        description = "Natürlichsprachlicher Konfigurations-Assistent (Anthropic Claude API). " +
+                "Führt Fachanwender per Dialog durch die vollständige Prozesskonfiguration. " +
+                "Stellt Rückfragen, generiert beanParameterMaps und startet den konstruierten Prozess.",
         categories = {"ai", "conversation"},
-        tags = {"dialog", "chat", "naturalLanguage", "claude", "guidance", "assistant"}
+        tags = {"dialog", "chat", "naturalLanguage", "claude", "guidance", "assistant", "anthropic"}
 )
 public class ClaudeConversationProcessor extends AbstractProcessor
         implements IAIConversationProcessor {
 
-    @ProcessorParameter(description = "Anthropic API Key für die Claude-Integration.",
+    // =========================================================================
+    // @ProcessorParameter-Felder
+    // =========================================================================
+
+    @ProcessorParameter(description = "Anthropic API Key.",
             ignoreInitialization = true)
     private String apiKey;
 
     @ProcessorParameter(value = "claude-sonnet-4-6",
-            description = "Claude Model ID für den Konversations-Assistenten.")
+            description = "Claude Model ID.")
     private String model = "claude-sonnet-4-6";
 
-    @ProcessorParameter(description = "System-Prompt-Template für den Assistenten. " +
-            "Platzhalter ${catalogSummary} wird mit dem Katalog-Summary ersetzt.",
+    @ProcessorParameter(value = "4096",
+            description = "Maximale Ausgabe-Token-Anzahl pro Konversations-Turn.")
+    private int maxTokens = 4096;
+
+    @ProcessorParameter(description = "System-Prompt-Template. " +
+            "Platzhalter ${catalogSummary} wird ersetzt.",
             ignoreInitialization = true)
     private String systemPromptTemplate;
 
-    @ProcessorParameter(description = "Der Prozessor-Katalog als Wissensbasis für den Assistenten.",
+    @ProcessorParameter(description = "Prozessor-Katalog als Wissensbasis.",
             ignoreInitialization = true)
     private IProcessorCatalog processorCatalog;
 
-    @ProcessorParameter(description = "Der Intent-Resolver für natürlichsprachliche Eingaben.",
+    @ProcessorParameter(description = "Intent-Resolver (optional — ConversationProcessor kann auch ohne ihn arbeiten).",
             ignoreInitialization = true)
     private IAIIntentResolver intentResolver;
 
-    @ProcessorParameter(description = "Der Blueprint-Generator (Claude API).",
+    @ProcessorParameter(description = "Blueprint-Generator für programmatische Entwurfs-Generierung.",
             ignoreInitialization = true)
     private IAIBlueprintGenerator blueprintGenerator;
 
-    @ProcessorParameter(description = "Der Konfigurations-Validator.",
+    @ProcessorParameter(description = "Konfigurations-Validator.",
             ignoreInitialization = true)
     private IAIConfigValidator configValidator;
 
-    @ProcessorParameter(description = "Der Incubator für Edit-Sessions und Konstruktion.",
+    @ProcessorParameter(description = "Incubator für Edit-Sessions und Konstruktion.",
             ignoreInitialization = true)
     private IIncubator incubator;
 
-    @ProcessorParameter(value = "0.7",
-            description = "Minimaler Konfidenz-Score für automatisches Draft-Ready (0.0–1.0).")
-    private float draftReadyThreshold = 0.7f;
+    @ProcessorParameter(value = "0.75",
+            description = "Minimaler Konfidenz-Score für automatischen DRAFT_READY-Übergang.")
+    private float draftReadyThreshold = 0.75f;
+
+    // Transient — in processorOnInit() gebaut
+    private transient ClaudeApiClient apiClient;
+    private transient ObjectMapper objectMapper;
+
+    @Override
+    public void processorOnInit() {
+        this.objectMapper = new ObjectMapper();
+        if (apiKey != null && !apiKey.isBlank()) {
+            this.apiClient = new ClaudeApiClient(apiKey, model, maxTokens);
+            log.info("ClaudeConversationProcessor: API-Client initialisiert (model={})", model);
+        } else {
+            log.warn("ClaudeConversationProcessor: kein apiKey — nur Fallback-Modus verfügbar");
+        }
+    }
 
     // =========================================================================
     // startConversation
@@ -109,13 +135,12 @@ public class ClaudeConversationProcessor extends AbstractProcessor
     }
 
     // =========================================================================
-    // processMessage
+    // processMessage — Haupt-Einstiegspunkt
     // =========================================================================
 
     @Override
     public AIResponse processMessage(AIConversationSession session, String userMessage) {
         if (session == null) {
-            log.warn("ClaudeConversationProcessor.processMessage: session ist null");
             return errorResponse("Keine aktive Session.");
         }
         if (userMessage == null || userMessage.isBlank()) {
@@ -123,153 +148,231 @@ public class ClaudeConversationProcessor extends AbstractProcessor
         }
 
         log.info("ClaudeConversationProcessor[{}]: Nachricht='{}', State={}",
-                session.getSessionId(), userMessage, session.getState());
+                session.getSessionId(),
+                userMessage.length() > 80 ? userMessage.substring(0, 80) + "..." : userMessage,
+                session.getState());
 
-        // Nachricht zur History hinzufügen
+        // User-Nachricht zur History hinzufügen
         session.addUserMessage(userMessage);
 
-        // State-basiertes Routing
-        return switch (session.getState()) {
-            case GATHERING_REQUIREMENTS -> handleGatheringRequirements(session, userMessage);
-            case REVIEWING_DRAFT -> handleReviewingDraft(session, userMessage);
-            case REFINING -> handleRefining(session, userMessage);
-            case CONFIRMED -> handleConfirmed(session, userMessage);
-            default -> errorResponse("Konversation ist in einem Endzustand: " + session.getState());
-        };
+        // CONFIRMED → Konstruktion starten
+        if (session.getState() == ConversationState.CONFIRMED) {
+            return handleConstruct(session);
+        }
+
+        // Endzustände
+        if (session.getState() == ConversationState.COMPLETED
+                || session.getState() == ConversationState.ABORTED) {
+            return errorResponse("Konversation ist abgeschlossen (State: " + session.getState() + ").");
+        }
+
+        // API verfügbar: alles über Claude
+        if (apiClient != null) {
+            return processWithClaude(session, userMessage);
+        }
+
+        // Fallback: regelbasierte State-Machine
+        return processFallback(session, userMessage);
     }
 
     // =========================================================================
-    // State-Handler
+    // Claude-basierte Verarbeitung (Haupt-Implementierung)
     // =========================================================================
 
-    private AIResponse handleGatheringRequirements(AIConversationSession session,
-                                                    String userMessage) {
-        // TODO (Session 2): IntentResolver + BlueprintGenerator mit echtem API-Call.
+    private AIResponse processWithClaude(AIConversationSession session, String userMessage) {
+        try {
+            String systemPrompt = buildConversationSystemPrompt();
+            List<Map<String, Object>> messages = ClaudeApiClient.fromHistory(session.getHistory());
 
-        // Intent auflösen (Stub: direkter Text)
-        AIIntention intention = intentResolver != null
-                ? intentResolver.resolve(userMessage, session)
-                : AIIntention.builder()
-                .intentType("CONFIGURE_PROCESS")
-                .rawText(userMessage)
-                .confidence(0.5f)
-                .build();
+            JsonNode response = apiClient.sendAndParseJson(systemPrompt, messages);
+            return parseAndApplyResponse(session, response);
 
-        log.debug("handleGatheringRequirements: intent='{}', confidence={}",
-                intention.getIntentType(), intention.getConfidence());
+        } catch (ClaudeApiClient.ClaudeApiException e) {
+            log.error("ClaudeConversationProcessor[{}]: API-Fehler: {}",
+                    session.getSessionId(), e.getMessage());
+            // Fallback auf regelbasierte Verarbeitung
+            return processFallback(session, userMessage);
+        }
+    }
 
-        // Wenn Konfidenz zu niedrig: Rückfrage
-        if (intention.getConfidence() < 0.4f) {
-            String response = buildClarificationQuestion(userMessage);
-            session.addAssistantMessage(response);
-            return AIResponse.builder()
-                    .message(response)
-                    .type(AIResponseType.QUESTION)
-                    .build();
+    /**
+     * Parst die JSON-Antwort von Claude und wendet sie auf die Session an.
+     */
+    private AIResponse parseAndApplyResponse(AIConversationSession session, JsonNode json) {
+        String typeStr = json.path("type").asText("QUESTION");
+        String message = json.path("message").asText("(keine Antwort)");
+        float confidence = (float) json.path("confidenceScore").asDouble(0.5);
+
+        // Assistant-Antwort zur History hinzufügen
+        session.addAssistantMessage(message);
+
+        // Optional: beanParameterMap extrahieren
+        JsonNode bpmNode = json.path("beanParameterMap");
+        Map<String, Map<String, Object>> bpm = null;
+        if (bpmNode.isObject() && !bpmNode.isEmpty()) {
+            try {
+                bpm = objectMapper.convertValue(bpmNode,
+                        new TypeReference<Map<String, Map<String, Object>>>() {});
+            } catch (Exception e) {
+                log.warn("ClaudeConversationProcessor: beanParameterMap-Parse-Fehler: {}", e.getMessage());
+            }
         }
 
-        // Blueprint generieren
-        BlueprintDraft draft = blueprintGenerator != null
-                ? blueprintGenerator.generateDraft(intention, processorCatalog)
-                : BlueprintDraft.builder()
-                .overallExplanation("[Stub] BlueprintGenerator nicht konfiguriert.")
-                .openQuestions(List.of("Welche Prozessoren sollen verwendet werden?"))
-                .confidenceScore(0.0f)
-                .build();
+        // BlueprintDraft aufbauen wenn bpm vorhanden
+        BlueprintDraft draft = null;
+        if (bpm != null && !bpm.isEmpty()) {
+            String rootProcessorId = json.path("rootProcessorId").asText(null);
+            String overallExplanation = json.path("overallExplanation").asText(null);
+            List<String> openQuestions = parseStringList(json.path("openQuestions"));
+            List<String> assumptions = parseStringList(json.path("assumptions"));
 
-        session.setCurrentDraft(draft);
-
-        // Wenn noch offene Fragen: weiter sammeln
-        if (draft.getOpenQuestions() != null && !draft.getOpenQuestions().isEmpty()
-                && draft.getConfidenceScore() < draftReadyThreshold) {
-
-            String response = formatOpenQuestionsResponse(draft);
-            session.addAssistantMessage(response);
-            return AIResponse.builder()
-                    .message(response)
-                    .type(AIResponseType.QUESTION)
-                    .draft(draft)
+            draft = BlueprintDraft.builder()
+                    .rootProcessorId(rootProcessorId)
+                    .beanParameterMap(bpm)
+                    .overallExplanation(overallExplanation)
+                    .openQuestions(openQuestions)
+                    .assumptions(assumptions)
+                    .confidenceScore(confidence)
                     .build();
+            session.setCurrentDraft(draft);
         }
 
-        // Entwurf bereit: State wechseln und Edit-Session starten (TODO)
-        session.setState(ConversationState.REVIEWING_DRAFT);
+        // State-Übergang
+        AIResponseType responseType = mapResponseType(typeStr, confidence, draft);
+        applyStateTransition(session, responseType);
 
-        String response = formatDraftReadyResponse(draft);
-        session.addAssistantMessage(response);
-
-        // Config validieren
-        ValidationReport report = configValidator != null
-                ? configValidator.validate(draft, processorCatalog)
-                : null;
+        // Validierung wenn Entwurf bereit
+        if (responseType == AIResponseType.DRAFT_READY && draft != null
+                && configValidator != null) {
+            ValidationReport report = configValidator.validate(draft, processorCatalog);
+            if (!report.isValid()) {
+                log.warn("ClaudeConversationProcessor: Entwurf invalid ({} Errors)",
+                        report.getIssues().stream()
+                                .filter(i -> i.getSeverity() == ValidationReport.ValidationIssue.Severity.ERROR)
+                                .count());
+                responseType = AIResponseType.QUESTION;
+            }
+        }
 
         return AIResponse.builder()
-                .message(response)
-                .type(report != null && !report.isValid()
-                        ? AIResponseType.QUESTION
-                        : AIResponseType.DRAFT_READY)
+                .message(message)
+                .type(responseType)
                 .draft(draft)
                 .build();
     }
 
-    private AIResponse handleReviewingDraft(AIConversationSession session, String userMessage) {
-        // TODO (Session 2): Semantische Analyse ob Bestätigung oder Änderungswunsch.
+    // =========================================================================
+    // Konstruktion (CONFIRMED-State)
+    // =========================================================================
 
-        String lower = userMessage.toLowerCase();
-        boolean isConfirmation = lower.contains("ja") || lower.contains("ok")
-                || lower.contains("gut") || lower.contains("start")
-                || lower.contains("bestätig");
+    private AIResponse handleConstruct(AIConversationSession session) {
+        log.info("ClaudeConversationProcessor[{}]: Starte Konstruktion", session.getSessionId());
 
-        if (isConfirmation) {
-            session.setState(ConversationState.CONFIRMED);
-            String response = "Entwurf bestätigt. Soll ich den Prozess jetzt konstruieren?";
-            session.addAssistantMessage(response);
-            return AIResponse.builder()
-                    .message(response)
-                    .type(AIResponseType.VALIDATED)
-                    .draft(session.getCurrentDraft())
-                    .suggestedActions(List.of("Prozess konstruieren", "Weiter bearbeiten"))
-                    .build();
+        BlueprintDraft draft = session.getCurrentDraft();
+        if (draft == null || draft.getRootProcessorId() == null) {
+            return errorResponse("Kein valider Entwurf vorhanden — Konstruktion abgebrochen.");
         }
 
-        // Änderungswunsch → Refining
-        session.setState(ConversationState.REFINING);
-        return handleRefining(session, userMessage);
+        if (incubator == null) {
+            String response = "Kein Incubator konfiguriert — Konstruktion nicht möglich.";
+            session.addAssistantMessage(response);
+            return AIResponse.builder().message(response).type(AIResponseType.ERROR).build();
+        }
+
+        try {
+            // ConstructTaskContext mit Blueprint-Daten aufbauen
+            final BlueprintDraft finalDraft = draft;
+            DefaultConstructTaskContext ctx = new DefaultConstructTaskContext() {
+                @Override
+                public Map<String, Map<String, Object>> getBeanParameterMap() {
+                    return finalDraft.getBeanParameterMap() != null
+                            ? finalDraft.getBeanParameterMap()
+                            : new LinkedHashMap<>();
+                }
+            };
+            ctx.setRootBeanId(draft.getRootProcessorId());
+            ctx.setRuntimeContext(getRuntimeContext());
+
+            var constructSession = incubator.startConstruct(ctx);
+
+            if (constructSession != null && constructSession.getRoot() != null) {
+                session.setState(ConversationState.COMPLETED);
+                String response = "Prozess '" + draft.getRootProcessorId() +
+                        "' wurde erfolgreich konstruiert und ist bereit.";
+                session.addAssistantMessage(response);
+                return AIResponse.builder()
+                        .message(response)
+                        .type(AIResponseType.CONFIRMATION)
+                        .build();
+            } else {
+                String response = "Konstruktion fehlgeschlagen — Prozess konnte nicht erzeugt werden.";
+                session.addAssistantMessage(response);
+                return AIResponse.builder()
+                        .message(response)
+                        .type(AIResponseType.ERROR)
+                        .build();
+            }
+
+        } catch (Exception e) {
+            log.error("ClaudeConversationProcessor[{}]: Konstruktion fehlgeschlagen: {}",
+                    session.getSessionId(), e.getMessage());
+            return errorResponse("Konstruktionsfehler: " + e.getMessage());
+        }
     }
 
-    private AIResponse handleRefining(AIConversationSession session, String userMessage) {
-        // TODO (Session 2): BlueprintGenerator.refineDraft() mit echtem API-Call.
+    // =========================================================================
+    // Fallback: regelbasierte State-Machine (kein API-Key)
+    // =========================================================================
 
-        BlueprintDraft refined = blueprintGenerator != null
-                ? blueprintGenerator.refineDraft(session.getCurrentDraft(), userMessage)
-                : session.getCurrentDraft();
+    private AIResponse processFallback(AIConversationSession session, String userMessage) {
+        String lower = userMessage.toLowerCase();
 
-        session.setCurrentDraft(refined);
-        session.setState(ConversationState.REVIEWING_DRAFT);
+        // Bestätigungserkennung
+        boolean isConfirmation = lower.contains("ja") || lower.contains("ok")
+                || lower.contains("gut") || lower.contains("start") || lower.contains("bestätig");
+        boolean isRejection = lower.contains("nein") || lower.contains("nicht")
+                || lower.contains("abbrechen") || lower.contains("stop");
 
-        String response = "[Stub] Entwurf überarbeitet. Feedback '" + userMessage +
-                "' wurde verarbeitet. Claude API-Integration folgt in Session 2.";
+        String response;
+        AIResponseType type;
+
+        switch (session.getState()) {
+            case GATHERING_REQUIREMENTS -> {
+                response = "Um einen Prozess zu konfigurieren, benötige ich mehr Informationen. " +
+                        "Was soll der Prozess tun? (API-Key nicht konfiguriert — bitte apiKey setzen.)";
+                type = AIResponseType.QUESTION;
+            }
+            case REVIEWING_DRAFT -> {
+                if (isConfirmation) {
+                    session.setState(ConversationState.CONFIRMED);
+                    response = "Entwurf bestätigt. Starte die Konstruktion...";
+                    type = AIResponseType.VALIDATED;
+                } else if (isRejection) {
+                    session.setState(ConversationState.ABORTED);
+                    response = "Konfiguration abgebrochen.";
+                    type = AIResponseType.CONFIRMATION;
+                } else {
+                    session.setState(ConversationState.REFINING);
+                    response = "Änderungswunsch notiert. Bitte gib an was geändert werden soll.";
+                    type = AIResponseType.QUESTION;
+                }
+            }
+            case REFINING -> {
+                session.setState(ConversationState.REVIEWING_DRAFT);
+                response = "Überarbeitung verarbeitet. Entwurf aktualisiert. Bestätigen?";
+                type = AIResponseType.REFINEMENT_APPLIED;
+            }
+            default -> {
+                response = "Unerwarteter Zustand: " + session.getState();
+                type = AIResponseType.ERROR;
+            }
+        }
+
         session.addAssistantMessage(response);
-
         return AIResponse.builder()
                 .message(response)
-                .type(AIResponseType.REFINEMENT_APPLIED)
-                .draft(refined)
-                .build();
-    }
-
-    private AIResponse handleConfirmed(AIConversationSession session, String userMessage) {
-        // TODO (Session 2): incubator.startConstruct() aufrufen.
-        log.info("ClaudeConversationProcessor[{}]: Konstruktion angefordert", session.getSessionId());
-        session.setState(ConversationState.COMPLETED);
-
-        String response = "[Stub] Konstruktion noch nicht implementiert (Session 2). " +
-                "incubator.startConstruct() wird hier aufgerufen.";
-        session.addAssistantMessage(response);
-
-        return AIResponse.builder()
-                .message(response)
-                .type(AIResponseType.CONFIRMATION)
+                .type(type)
+                .draft(session.getCurrentDraft())
                 .build();
     }
 
@@ -277,45 +380,97 @@ public class ClaudeConversationProcessor extends AbstractProcessor
     // Hilfsmethoden
     // =========================================================================
 
-    private String buildClarificationQuestion(String userMessage) {
-        return "Ich habe Ihre Anfrage noch nicht vollständig verstanden. " +
-                "Könnten Sie bitte genauer beschreiben, was Sie benötigen?";
+    private String buildConversationSystemPrompt() {
+        String template = systemPromptTemplate != null
+                ? systemPromptTemplate
+                : CONVERSATION_SYSTEM_PROMPT;
+        String summary = processorCatalog != null
+                ? processorCatalog.getCapabilitySummary()
+                : "(kein Katalog verfügbar)";
+        return template.replace("${catalogSummary}", summary);
     }
 
-    private String formatOpenQuestionsResponse(BlueprintDraft draft) {
-        StringBuilder sb = new StringBuilder();
-        if (draft.getOverallExplanation() != null) {
-            sb.append(draft.getOverallExplanation()).append("\n\n");
-        }
-        sb.append("Ich habe noch folgende Fragen:\n");
-        for (String q : draft.getOpenQuestions()) {
-            sb.append("- ").append(q).append("\n");
-        }
-        return sb.toString();
+    private AIResponseType mapResponseType(String typeStr, float confidence, BlueprintDraft draft) {
+        return switch (typeStr.toUpperCase()) {
+            case "QUESTION" -> AIResponseType.QUESTION;
+            case "DRAFT_READY", "DRAFT" -> AIResponseType.DRAFT_READY;
+            case "REFINEMENT_APPLIED", "REFINEMENT" -> AIResponseType.REFINEMENT_APPLIED;
+            case "VALIDATED", "CONFIRMATION", "CONFIRMED" -> AIResponseType.VALIDATED;
+            case "ERROR" -> AIResponseType.ERROR;
+            default -> (draft != null && confidence >= draftReadyThreshold)
+                    ? AIResponseType.DRAFT_READY
+                    : AIResponseType.QUESTION;
+        };
     }
 
-    private String formatDraftReadyResponse(BlueprintDraft draft) {
-        StringBuilder sb = new StringBuilder("Entwurf erstellt");
-        if (draft.getOverallExplanation() != null) {
-            sb.append(": ").append(draft.getOverallExplanation());
+    private void applyStateTransition(AIConversationSession session, AIResponseType type) {
+        switch (type) {
+            case DRAFT_READY -> session.setState(ConversationState.REVIEWING_DRAFT);
+            case REFINEMENT_APPLIED -> session.setState(ConversationState.REVIEWING_DRAFT);
+            case VALIDATED -> session.setState(ConversationState.CONFIRMED);
+            default -> { /* State bleibt */ }
         }
-        sb.append("\n\nMöchten Sie den Prozess starten oder noch Änderungen vornehmen?");
-        return sb.toString();
+    }
+
+    private List<String> parseStringList(JsonNode node) {
+        List<String> result = new ArrayList<>();
+        if (node != null && node.isArray()) {
+            node.forEach(el -> result.add(el.asText()));
+        }
+        return result;
     }
 
     private AIResponse errorResponse(String message) {
         log.warn("ClaudeConversationProcessor: Fehler — {}", message);
-        return AIResponse.builder()
-                .message(message)
-                .type(AIResponseType.ERROR)
-                .build();
+        return AIResponse.builder().message(message).type(AIResponseType.ERROR).build();
     }
 
     private AIResponse questionResponse(AIConversationSession session, String message) {
         if (session != null) session.addAssistantMessage(message);
-        return AIResponse.builder()
-                .message(message)
-                .type(AIResponseType.QUESTION)
-                .build();
+        return AIResponse.builder().message(message).type(AIResponseType.QUESTION).build();
     }
+
+    // =========================================================================
+    // Default System-Prompt
+    // =========================================================================
+
+    private static final String CONVERSATION_SYSTEM_PROMPT = """
+            Du bist ein Konfigurations-Assistent für das Prozessorframework "Starima PFW".
+            Deine Aufgabe: Fachanwender durch die Konfiguration eines Prozesses führen.
+
+            Verfügbare Prozessoren:
+            ${catalogSummary}
+
+            DIALOG-REGELN:
+            1. Stelle gezielte Rückfragen bis du genug Information hast
+            2. Generiere eine beanParameterMap sobald du genug weißt
+            3. Erkläre was du konfiguriert hast und warum
+            4. Frage nach Bestätigung bevor du den Prozess startest
+
+            ANTWORT-FORMAT (IMMER dieses JSON, kein Text darum herum):
+            {
+              "type": "QUESTION",
+              "message": "Natürlichsprachliche Antwort an den Nutzer (Deutsch)",
+              "rootProcessorId": null,
+              "beanParameterMap": {},
+              "overallExplanation": null,
+              "decisions": [],
+              "assumptions": [],
+              "openQuestions": [],
+              "confidenceScore": 0.0
+            }
+
+            TYPE-WERTE:
+            - "QUESTION"            → Rückfrage, mehr Info benötigt
+            - "DRAFT_READY"         → Erster vollständiger Entwurf fertig (confidenceScore >= 0.75)
+            - "REFINEMENT_APPLIED"  → Überarbeitung auf Basis von Feedback
+            - "VALIDATED"           → Entwurf bestätigt, bereit zur Konstruktion
+            - "ERROR"               → Fehler aufgetreten
+
+            WICHTIG:
+            - Setze beanParameterMap nur wenn type = DRAFT_READY oder REFINEMENT_APPLIED
+            - confidenceScore < 0.75 → type = QUESTION (mehr Info sammeln)
+            - Antworte immer auf Deutsch
+            - BeanId-Format: "prototypeId:instanceName@scope" (z.B. "csvReaderProcessor:src1@parentcontext")
+            """;
 }
